@@ -1,0 +1,31 @@
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.radio-group label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.metrics-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed rgba(244, 240, 232, 0.2);
+}
+
+.metrics-list li span {
+  font-weight: bold;
+  color: var(--color-accent-copper);
+}
+
+.metrics-list.compare li span {
+  color: var(--color-accent-lilac);
+}
