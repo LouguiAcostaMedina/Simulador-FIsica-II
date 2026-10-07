@@ -104,3 +104,23 @@ Tras P4 preparar informe técnico final, video real y presentación de defensa. 
 Figma sirve para diseño visual si existe acceso. Ninguna herramienta opcional debe bloquear la entrega de U1/U2. 10. Definición de terminado y reporte del agente
 P2 se considera terminado solo si: el hub y ambas unidades se pueden usar en escritorio/móvil; U1/U2 producen resultados correctos con unidades; las vistas 2D/3D y estados funcionan; entradas erróneas tienen mensajes útiles; los casos analíticos, lint, typecheck, tests y build pasan; existe respaldo 2D si WebGL falla; la documentación refleja lo construido; se registran capturas reales y commits reales. U3/U4 siguen indicadas como próximas y sus contratos no rompen el build.
 Al terminar cada hito informa: funcionalidad entregada, archivos importantes, fórmula y caso comprobado, comandos con resultado real, captura/previsualización si aplica, rama/commit/PR reales y siguiente hito. No uses frases «completado» o «probado» sin esa evidencia. Si un hito falla, explica qué falla, corrige y vuelve a probar. Al final entrega una matriz `Requisito | Estado | Evidencia | Pendiente` y las limitaciones conocidas. La prioridad es un producto utilizable, físicamente consistente y defendible.
+
+## Git y trazabilidad
+
+Repositorio:
+https://github.com/LouguiAcostaMedina/Simulador-FIsica-II.git
+
+Ramas:
+
+main -> estable
+develop -> integración
+feature/* -> funcionalidades
+fix/* -> errores
+test/* -> pruebas
+refactor/* -> refactorización
+docs/* -> documentación
+
+Regla:
+
+Nunca desarrollar directamente en main.
+Se debe utilizar la convención Conventional Commits (feat, fix, chore, docs, test, refactor, style, perf).
