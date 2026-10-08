@@ -69,7 +69,7 @@ export class ElectricSimulation {
       }
 
     } catch (e: any) {
-      this.state = 'error'
+      this.state = 'paused'
       this.errorMsg = e.message
     }
   }

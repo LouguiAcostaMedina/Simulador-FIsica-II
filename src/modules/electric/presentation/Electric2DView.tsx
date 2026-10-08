@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState, MouseEvent } from 'react'
 import { Charge, TestParticle } from '../domain/Charge'
 import { FieldMath } from '../domain/FieldMath'
 import { Vector3 } from '../../../shared/domain/Vector3'
@@ -7,10 +7,65 @@ interface Props {
   charges: Charge[]
   testParticle: TestParticle | null
   trajectory: Vector3[]
+  scale: number
+  onChargeMove?: (id: string, q: number, newPos: Vector3) => void
+  onInspect?: (pos: Vector3 | null) => void
 }
 
-export function Electric2DView({ charges, testParticle, trajectory }: Props) {
+export function Electric2DView({ charges, testParticle, trajectory, scale, onChargeMove, onInspect }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  
+  const [draggingCharge, setDraggingCharge] = useState<string | null>(null)
+
+  const getEventWorldPos = (e: MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return new Vector3(0, 0, 0)
+    const rect = canvas.getBoundingClientRect()
+    // Resolucion real vs tamaño visual
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    
+    const x = (e.clientX - rect.left) * scaleX
+    const y = (e.clientY - rect.top) * scaleY
+
+    const cx = canvas.width / 2
+    const cy = canvas.height / 2
+
+    return new Vector3((x - cx) / scale, -(y - cy) / scale, 0)
+  }
+
+  const handlePointerDown = (e: MouseEvent<HTMLCanvasElement>) => {
+    const wPos = getEventWorldPos(e)
+    
+    // Verificar si clickea una carga (radio de colision = 15/scale m)
+    const hitRadius = 15 / scale
+    for (let i = charges.length - 1; i >= 0; i--) {
+      const c = charges[i]
+      if (c.position.sub(wPos).length() <= hitRadius) {
+        setDraggingCharge(c.id)
+        if (onInspect) onInspect(null)
+        return
+      }
+    }
+    // Si no clickea carga, inspecciona el punto
+    if (onInspect) {
+      onInspect(wPos)
+    }
+  }
+
+  const handlePointerMove = (e: MouseEvent<HTMLCanvasElement>) => {
+    if (draggingCharge && onChargeMove) {
+      const wPos = getEventWorldPos(e)
+      const charge = charges.find(c => c.id === draggingCharge)
+      if (charge) {
+        onChargeMove(draggingCharge, charge.q, wPos)
+      }
+    }
+  }
+
+  const handlePointerUp = () => {
+    setDraggingCharge(null)
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -22,15 +77,16 @@ export function Electric2DView({ charges, testParticle, trajectory }: Props) {
     const height = canvas.height
     ctx.clearRect(0, 0, width, height)
 
-    // Escala: 1 metro = 50 pixeles, origen al centro
-    const scale = 50
     const cx = width / 2
     const cy = height / 2
 
     const toWorld = (x: number, y: number) => new Vector3((x - cx) / scale, -(y - cy) / scale, 0)
     const toScreen = (v: Vector3) => ({ x: cx + v.x * scale, y: cy - v.y * scale })
 
-    // Dibujar cuadrícula de campo
+    // 1. Dibujar mapa de potencial (Líneas equipotenciales simplificadas por contornos crudos o heatmap)
+    // Para mantener el rendimiento en JS, dibujaremos campos direccionales por ahora 
+    // y añadiremos líneas equipotenciales en un step separado si es muy lento.
+    // Pintaremos las líneas del campo:
     const step = 40
     ctx.strokeStyle = 'rgba(66, 215, 200, 0.3)'
     for (let x = 0; x < width; x += step) {
@@ -42,23 +98,21 @@ export function Electric2DView({ charges, testParticle, trajectory }: Props) {
           const mag = E.length()
           if (mag > 0) {
             const E_norm = E.multiplyScalar(1 / mag)
-            // Longitud fija para la flecha de dirección
             const length = 15
             ctx.beginPath()
             ctx.moveTo(x, y)
             ctx.lineTo(x + E_norm.x * length, y - E_norm.y * length)
             ctx.stroke()
-            // Podríamos dibujar una cabecita a la flecha, simplificaremos
             ctx.fillStyle = 'rgba(66, 215, 200, 0.5)'
             ctx.fillRect(x + E_norm.x * length - 1, y - E_norm.y * length - 1, 3, 3)
           }
         } catch (e) {
-          // cerca de la carga
+          // Singularity
         }
       }
     }
 
-    // Dibujar trayectoria
+    // 2. Dibujar trayectoria
     if (trajectory.length > 1) {
       ctx.strokeStyle = '#F5A66A'
       ctx.lineWidth = 2
@@ -72,20 +126,21 @@ export function Electric2DView({ charges, testParticle, trajectory }: Props) {
       ctx.stroke()
     }
 
-    // Dibujar cargas
+    // 3. Dibujar cargas
     charges.forEach(c => {
       const pos = toScreen(c.position)
       ctx.beginPath()
-      ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2)
-      ctx.fillStyle = c.q > 0 ? '#F27C77' : '#B69BE8' // Rojo +, Azul -
+      ctx.arc(pos.x, pos.y, 12, 0, Math.PI * 2)
+      ctx.fillStyle = c.q > 0 ? '#F27C77' : '#B69BE8' 
       ctx.fill()
       ctx.fillStyle = '#fff'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
+      ctx.font = '14px Arial'
       ctx.fillText(c.q > 0 ? '+' : '-', pos.x, pos.y)
     })
 
-    // Dibujar test particle
+    // 4. Dibujar test particle
     if (testParticle) {
       const pos = toScreen(testParticle.position)
       ctx.beginPath()
@@ -94,14 +149,18 @@ export function Electric2DView({ charges, testParticle, trajectory }: Props) {
       ctx.fill()
     }
 
-  }, [charges, testParticle, trajectory])
+  }, [charges, testParticle, trajectory, scale])
 
   return (
     <canvas 
       ref={canvasRef} 
       width={800} 
       height={600} 
-      style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+      style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: draggingCharge ? 'grabbing' : 'crosshair' }} 
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerUp}
     />
   )
 }

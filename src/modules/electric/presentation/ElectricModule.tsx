@@ -4,11 +4,15 @@ import { useElectricSimulation } from './useElectricSimulation'
 import { Vector3 } from '../../../shared/domain/Vector3'
 import { Electric2DView } from './Electric2DView'
 import { Electric3DView } from './Electric3DView'
+import { FieldMath } from '../domain/FieldMath'
 import './ElectricModule.css'
 
 export default function ElectricModule() {
   const sim = useElectricSimulation()
   const [viewMode, setViewMode] = useState<'2D' | '3D'>('3D')
+
+  const [scale, setScale] = useState(50)
+  const [inspectedPos, setInspectedPos] = useState<Vector3 | null>(null)
 
   // Inputs para añadir carga
   const [qInput, setQInput] = useState(1) // uC
@@ -17,7 +21,7 @@ export default function ElectricModule() {
 
   const handleAddCharge = () => {
     sim.addCharge({
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9),
       q: qInput * 1e-6, // convertir de uC a C
       position: new Vector3(xInput, yInput, 0)
     })
@@ -82,16 +86,50 @@ export default function ElectricModule() {
             <button onClick={() => sim.setErrorMsg(null)}>OK</button>
           </div>
         )}
+
+        {inspectedPos && (
+          <section className="control-group inspector-panel">
+            <h3>Inspector</h3>
+            <p>Pos: ({inspectedPos.x.toFixed(2)}, {inspectedPos.y.toFixed(2)}) m</p>
+            {(() => {
+              try {
+                const E = FieldMath.evaluateField(sim.charges, inspectedPos);
+                const V = FieldMath.evaluatePotential(sim.charges, inspectedPos);
+                return (
+                  <ul>
+                    <li>Ex: {E.x.toExponential(2)} N/C</li>
+                    <li>Ey: {E.y.toExponential(2)} N/C</li>
+                    <li>|E|: {E.length().toExponential(2)} N/C</li>
+                    <li>V: {V.toExponential(2)} V</li>
+                  </ul>
+                );
+              } catch (e) {
+                return <p>Singularidad (Campo infinito)</p>
+              }
+            })()}
+          </section>
+        )}
       </aside>
 
       <main className="electric-canvas-area">
         <div className="canvas-toolbar">
           <button onClick={() => setViewMode('2D')} className={viewMode === '2D' ? 'active' : ''}>Vista 2D</button>
           <button onClick={() => setViewMode('3D')} className={viewMode === '3D' ? 'active' : ''}>Vista 3D</button>
+          <div className="scale-control">
+            <label>Escala (px/m): <input type="range" min="10" max="200" value={scale} onChange={e => setScale(Number(e.target.value))} /></label>
+            <span>{scale}</span>
+          </div>
         </div>
         <div className="canvas-container">
            {viewMode === '2D' ? (
-             <Electric2DView charges={sim.charges} testParticle={sim.testParticle} trajectory={sim.trajectory} />
+             <Electric2DView 
+                charges={sim.charges} 
+                testParticle={sim.testParticle} 
+                trajectory={sim.trajectory} 
+                scale={scale}
+                onChargeMove={sim.updateCharge}
+                onInspect={setInspectedPos}
+              />
            ) : (
              <Electric3DView charges={sim.charges} testParticle={sim.testParticle} trajectory={sim.trajectory} />
            )}
