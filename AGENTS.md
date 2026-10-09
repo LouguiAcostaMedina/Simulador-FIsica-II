@@ -16,8 +16,8 @@ AGENTS.md — Laboratorio Vectorial
    P0 Hub común Portada, selección de cuatro unidades, ayuda breve, navegación, accesibilidad, estado de disponibilidad. Operativo.
    P1 U1: electricidad, campo y potencial Hasta diez cargas puntuales en 2D/3D; campo, líneas, potencial/equipotenciales; consulta numérica y trayectoria de carga de prueba. Operativo y validado.
    P2 U2: capacitores y dieléctricos Placas paralelas 3D; área, distancia, dieléctrico, voltaje/carga, energía y comparación de escenarios. Operativo y validado.
-   P3 U3: corriente y ley de Ohm Corriente/carga/tiempo, densidad y velocidad de deriva, resistividad y resistencia; ley de Ohm, potencia y circuitos resistivos serie/paralelo/mixtos válidos. Ruta y contrato preparados; indicador «Próximamente».
-   P4 U4: fuerza y campo magnético Campo de conductor rectilíneo y aproximación de dipolo; trayectoria bajo E y B; fuerza de Lorentz. Ruta y contrato preparados; indicador «Próximamente».
+   P3 U3: corriente y ley de Ohm Corriente/carga/tiempo, densidad y velocidad de deriva, resistividad y resistencia; ley de Ohm, potencia y circuitos resistivos serie/paralelo/mixtos válidos. Operativo y validado.
+   P4 U4: fuerza y campo magnético Campo de conductor rectilíneo y aproximación de dipolo; trayectoria bajo E y B; fuerza de Lorentz. Operativo y validado.
    No presentar vistas vacías como laboratorios completos. Las rutas U3/U4 muestran una descripción clara y regreso al hub; la lógica se desarrollará en P3/P4. El alcance de U1/U2 tiene prioridad sobre adornos y exportaciones opcionales.
    P1 — U1: comportamiento detallado
    Crear, seleccionar, arrastrar y editar entre 1 y 10 cargas positivas o negativas; alternativa numérica para uso sin arrastre; eliminar y restaurar.
