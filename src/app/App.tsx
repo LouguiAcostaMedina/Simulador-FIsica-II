@@ -17,6 +17,7 @@ export function App() {
           <Route path="/capacitors" element={<CapacitorsModule />} />
           <Route path="/current" element={<CurrentModule />} />
           <Route path="/magnetism" element={<MagnetismModule />} />
+          <Route path="*" element={<div style={{ padding: '4rem', textAlign: 'center' }}><h2>404 - Página no encontrada</h2><Link to="/" className="back-link">Volver al Hub</Link></div>} />
         </Routes>
       </Suspense>
     </BrowserRouter>

@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useElectricSimulation } from './useElectricSimulation'
 import { Vector3 } from '../../../shared/domain/Vector3'
 import { Electric2DView } from './Electric2DView'
 import { Electric3DView } from './Electric3DView'
 import { FieldMath } from '../domain/FieldMath'
-import './ElectricModule.css'
+import { isWebGLAvailable } from '../../../shared/ui/isWebGLAvailable'
 
 export default function ElectricModule() {
   const sim = useElectricSimulation()
-  const [viewMode, setViewMode] = useState<'2D' | '3D'>('3D')
-
+  const webGLAvailable = useMemo(() => isWebGLAvailable(), [])
+  const [viewMode, setViewMode] = useState<'2D' | '3D'>(webGLAvailable ? '3D' : '2D')
   const [scale, setScale] = useState(50)
   const [inspectedPos, setInspectedPos] = useState<Vector3 | null>(null)
 
@@ -116,7 +116,15 @@ export default function ElectricModule() {
       <main className="electric-canvas-area">
         <div className="canvas-toolbar">
           <button onClick={() => setViewMode('2D')} className={viewMode === '2D' ? 'active' : ''}>Vista 2D</button>
-          <button onClick={() => setViewMode('3D')} className={viewMode === '3D' ? 'active' : ''}>Vista 3D</button>
+          <button 
+             onClick={() => {
+               if (!webGLAvailable) {
+                 sim.setErrorMsg("WebGL no está disponible en este dispositivo. Usando vista 2D.");
+                 return;
+               }
+               setViewMode('3D')
+             }} 
+             className={viewMode === '3D' ? 'active' : ''}>Vista 3D</button>
           <div className="scale-control">
             <label>Escala (px/m): <input type="range" min="10" max="200" value={scale} onChange={e => setScale(Number(e.target.value))} /></label>
             <span>{scale}</span>

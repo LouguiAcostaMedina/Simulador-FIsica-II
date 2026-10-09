@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Magnetism3DView } from './presentation/Magnetism3DView'
 import { Vector3 } from '../../shared/domain/Vector3'
-import './MagnetismModule.css'
+import { isWebGLAvailable } from '../../shared/ui/isWebGLAvailable'
 
 export default function MagnetismModule() {
   const [mode, setMode] = useState<'wire' | 'dipole'>('wire')
@@ -11,7 +11,9 @@ export default function MagnetismModule() {
   const [q, setQ] = useState(1)
   const [vz, setVz] = useState(5)
   const [Ey, setEy] = useState(0)
-  const [webGLLost, setWebGLLost] = useState(false)
+  
+  const webGLAvailable = React.useMemo(() => isWebGLAvailable(), [])
+  const [webGLLost, setWebGLLost] = useState(!webGLAvailable)
 
   return (
     <div className="electric-layout">

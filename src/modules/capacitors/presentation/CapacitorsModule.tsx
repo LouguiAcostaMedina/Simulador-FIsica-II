@@ -4,11 +4,12 @@ import { useCapacitorSimulation } from './useCapacitorSimulation'
 import { Capacitor3DView } from './Capacitor3DView'
 import { SimpleLineChart } from '../../../shared/ui/SimpleLineChart'
 import { CapacitorMath } from '../domain/CapacitorMath'
-import './CapacitorsModule.css'
+import { isWebGLAvailable } from '../../../shared/ui/isWebGLAvailable'
 
 export default function CapacitorsModule() {
   const { state, metrics, originalMetrics, setParam, setBaseLine, clearBaseLine } = useCapacitorSimulation()
-  const [webGLLost, setWebGLLost] = useState(false)
+  const webGLAvailable = useMemo(() => isWebGLAvailable(), [])
+  const [webGLLost, setWebGLLost] = useState(!webGLAvailable)
 
   const isValid = state.A > 0 && state.d > 0 && state.er >= 1
 

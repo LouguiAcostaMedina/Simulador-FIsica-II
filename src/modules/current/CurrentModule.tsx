@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { CircuitNode, CircuitSolver } from './domain/CircuitSolver'
 import { CircuitView } from './CircuitView'
 import { RCView } from './RCView'
-import './CurrentModule.css'
 
 export default function CurrentModule() {
   const [activeTab, setActiveTab] = useState<'ohm' | 'rc'>('ohm')
