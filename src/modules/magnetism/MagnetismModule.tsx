@@ -11,6 +11,7 @@ export default function MagnetismModule() {
   const [q, setQ] = useState(1)
   const [vz, setVz] = useState(5)
   const [Ey, setEy] = useState(0)
+  const [webGLLost, setWebGLLost] = useState(false)
 
   return (
     <div className="electric-layout">
@@ -70,15 +71,24 @@ export default function MagnetismModule() {
 
       <main className="electric-canvas-area">
         <div className="canvas-container">
-           <Magnetism3DView 
-             mode={mode} 
-             I={I} 
-             showLorentz={showLorentz}
-             q={q}
-             v0={new Vector3(0, 0, vz)}
-             EExt={new Vector3(0, Ey, 0)}
-             BExt={new Vector3(0, 0, 0)}
-           />
+           {webGLLost ? (
+               <div className="error-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                 <h3>El contexto WebGL se ha perdido.</h3>
+                 <p>Por favor, recarga la página o intenta de nuevo.</p>
+                 <button onClick={() => setWebGLLost(false)}>Reintentar</button>
+               </div>
+           ) : (
+               <Magnetism3DView 
+                 mode={mode} 
+                 I={I} 
+                 showLorentz={showLorentz}
+                 q={q}
+                 v0={new Vector3(0, 0, vz)}
+                 EExt={new Vector3(0, Ey, 0)}
+                 BExt={new Vector3(0, 0, 0)}
+                 onContextLost={() => setWebGLLost(true)}
+               />
+           )}
         </div>
       </main>
     </div>

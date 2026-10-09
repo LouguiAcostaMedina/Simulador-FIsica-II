@@ -6,9 +6,10 @@ import { CapacitorState, CapacitorMetrics } from '../domain/CapacitorMath'
 interface Props {
   state: CapacitorState
   metrics: CapacitorMetrics
+  onContextLost?: () => void
 }
 
-export function Capacitor3DView({ state, metrics }: Props) {
+export function Capacitor3DView({ state, metrics, onContextLost }: Props) {
   // Calculamos dimensiones proporcionales a escala visual
   // A = área. L = sqrt(A)
   const L = Math.sqrt(state.A) * 10 // Escala de visualización
@@ -18,7 +19,15 @@ export function Capacitor3DView({ state, metrics }: Props) {
   const colorDielectrico = state.er > 1 ? 'rgba(66, 215, 200, 0.4)' : 'transparent'
 
   return (
-    <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
+    <Canvas 
+       camera={{ position: [5, 5, 5], fov: 50 }}
+       onCreated={({ gl }) => {
+         gl.domElement.addEventListener('webglcontextlost', (e) => {
+           e.preventDefault();
+           onContextLost?.();
+         });
+       }}
+    >
       <ambientLight intensity={0.6} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
       <OrbitControls />

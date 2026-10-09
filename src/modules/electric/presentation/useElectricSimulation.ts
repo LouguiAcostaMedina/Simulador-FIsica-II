@@ -63,6 +63,12 @@ export function useElectricSimulation() {
     updateReactState()
   }
 
+  const clearCharges = () => {
+    simulation.setCharges([])
+    setCharges([])
+    updateReactState()
+  }
+
   const setupTestParticle = (p: TestParticle) => {
     simulation.setTestParticle(p)
     setTestParticle(p)
@@ -98,6 +104,7 @@ export function useElectricSimulation() {
     addCharge,
     updateCharge,
     removeCharge,
+    clearCharges,
     setupTestParticle,
     play,
     pause,

@@ -9,16 +9,25 @@ interface Props {
   charges: Charge[]
   testParticle: TestParticle | null
   trajectory: Vector3[]
+  onContextLost?: () => void
 }
 
-export function Electric3DView({ charges, testParticle, trajectory }: Props) {
+export function Electric3DView({ charges, testParticle, trajectory, onContextLost }: Props) {
   // Convertimos trajectory a arreglo de puntos para el Line de drei
   const points = useMemo(() => {
     return trajectory.map(p => [p.x, p.y, p.z] as [number, number, number])
   }, [trajectory])
 
   return (
-    <Canvas camera={{ position: [0, 0, 10], fov: 50 }}>
+    <Canvas 
+      camera={{ position: [0, 0, 10], fov: 50 }}
+      onCreated={({ gl }) => {
+        gl.domElement.addEventListener('webglcontextlost', (e) => {
+          e.preventDefault();
+          onContextLost?.();
+        });
+      }}
+    >
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
       <OrbitControls />

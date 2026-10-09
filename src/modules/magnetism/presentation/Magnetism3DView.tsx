@@ -12,9 +12,10 @@ interface Props {
   showLorentz: boolean
   q: number
   v0: Vector3
+  onContextLost?: () => void
 }
 
-export function Magnetism3DView({ mode, I, BExt, EExt, showLorentz, q, v0 }: Props) {
+export function Magnetism3DView({ mode, I, BExt, EExt, showLorentz, q, v0, onContextLost }: Props) {
   const [particlePos, setParticlePos] = useState(new Vector3(2, 0, 0))
   const [particleVel, setParticleVel] = useState(v0)
   const [trajectory, setTrajectory] = useState<Vector3[]>([new Vector3(2, 0, 0)])
@@ -97,7 +98,15 @@ export function Magnetism3DView({ mode, I, BExt, EExt, showLorentz, q, v0 }: Pro
   }, [mode]);
 
   return (
-    <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
+    <Canvas 
+      camera={{ position: [5, 5, 5], fov: 50 }}
+      onCreated={({ gl }) => {
+        gl.domElement.addEventListener('webglcontextlost', (e) => {
+          e.preventDefault();
+          onContextLost?.();
+        });
+      }}
+    >
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
       <OrbitControls />

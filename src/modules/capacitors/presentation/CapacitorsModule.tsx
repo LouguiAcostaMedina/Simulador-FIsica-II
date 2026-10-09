@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCapacitorSimulation } from './useCapacitorSimulation'
 import { Capacitor3DView } from './Capacitor3DView'
@@ -8,6 +8,7 @@ import './CapacitorsModule.css'
 
 export default function CapacitorsModule() {
   const { state, metrics, originalMetrics, setParam, setBaseLine, clearBaseLine } = useCapacitorSimulation()
+  const [webGLLost, setWebGLLost] = useState(false)
 
   const isValid = state.A > 0 && state.d > 0 && state.er >= 1
 
@@ -121,7 +122,15 @@ export default function CapacitorsModule() {
       
       <main className="electric-canvas-area">
          <div className="canvas-container">
-            {isValid && <Capacitor3DView state={state} metrics={metrics!} />}
+            {webGLLost ? (
+               <div className="error-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                 <h3>El contexto WebGL se ha perdido.</h3>
+                 <p>Por favor, recarga la página o intenta de nuevo.</p>
+                 <button onClick={() => setWebGLLost(false)}>Reintentar</button>
+               </div>
+            ) : (
+               isValid && <Capacitor3DView state={state} metrics={metrics!} onContextLost={() => setWebGLLost(true)} />
+            )}
          </div>
       </main>
     </div>

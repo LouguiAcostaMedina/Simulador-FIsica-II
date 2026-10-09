@@ -9,7 +9,7 @@ const MagnetismModule = lazy(() => import('../modules/magnetism/MagnetismModule'
 
 export function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Cargando Laboratorio...</div>}>
         <Routes>
           <Route path="/" element={<Hub />} />

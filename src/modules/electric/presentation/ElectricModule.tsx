@@ -20,6 +20,7 @@ export default function ElectricModule() {
   const [yInput, setYInput] = useState(0)
 
   const handleAddCharge = () => {
+    if (sim.charges.length >= 10) return;
     sim.addCharge({
       id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9),
       q: qInput * 1e-6, // convertir de uC a C
@@ -28,10 +29,11 @@ export default function ElectricModule() {
   }
 
   const handlePresetDipole = () => {
-    sim.removeCharge('all') // need a way to clear, let's just cheat and replace state or add clear
-    // For simplicity, let's just add two if there's room
-    sim.addCharge({ id: 'p1', q: 1e-6, position: new Vector3(-1, 0, 0) })
-    sim.addCharge({ id: 'p2', q: -1e-6, position: new Vector3(1, 0, 0) })
+    sim.clearCharges()
+    const id1 = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9)
+    const id2 = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9)
+    sim.addCharge({ id: id1, q: 1e-6, position: new Vector3(-1, 0, 0) })
+    sim.addCharge({ id: id2, q: -1e-6, position: new Vector3(1, 0, 0) })
   }
 
   return (
@@ -51,7 +53,7 @@ export default function ElectricModule() {
             <label>X (m): <input type="number" value={xInput} onChange={e => setXInput(Number(e.target.value))} /></label>
             <label>Y (m): <input type="number" value={yInput} onChange={e => setYInput(Number(e.target.value))} /></label>
           </div>
-          <button onClick={handleAddCharge}>Añadir Carga</button>
+          <button onClick={handleAddCharge} disabled={sim.charges.length >= 10}>Añadir Carga</button>
           <button onClick={handlePresetDipole} className="secondary">Preset: Dipolo</button>
         </section>
 
@@ -131,7 +133,15 @@ export default function ElectricModule() {
                 onInspect={setInspectedPos}
               />
            ) : (
-             <Electric3DView charges={sim.charges} testParticle={sim.testParticle} trajectory={sim.trajectory} />
+             <Electric3DView 
+                 charges={sim.charges} 
+                 testParticle={sim.testParticle} 
+                 trajectory={sim.trajectory}
+                 onContextLost={() => {
+                   sim.setErrorMsg("El contexto WebGL falló. Cambiando a vista 2D por seguridad.");
+                   setViewMode('2D');
+                 }}
+              />
            )}
         </div>
       </main>
