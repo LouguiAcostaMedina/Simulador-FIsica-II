@@ -1,6 +1,6 @@
 import React from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Box, Html } from '@react-three/drei'
+import { OrbitControls, Box, Html, Sphere } from '@react-three/drei'
 import { CapacitorState, CapacitorMetrics } from '../domain/CapacitorMath'
 
 interface Props {
@@ -34,9 +34,32 @@ export function Capacitor3DView({ state, metrics }: Props) {
 
         {/* Dieléctrico (si aplica) */}
         {state.er > 1 && (
-           <Box args={[L, d_visual, L]} position={[0, 0, 0]}>
-              <meshPhysicalMaterial color="#42D7C8" transmission={0.9} opacity={1} transparent roughness={0.1} />
-           </Box>
+           <group>
+             <Box args={[L, d_visual, L]} position={[0, 0, 0]}>
+                <meshPhysicalMaterial color="#42D7C8" transmission={0.9} opacity={1} transparent roughness={0.1} />
+             </Box>
+             {/* Polarización Esquemática (Dipolos) */}
+             {Array.from({length: 3}).map((_, i) => 
+               Array.from({length: 3}).map((_, j) => {
+                 const x = (i - 1) * (L / 3)
+                 const z = (j - 1) * (L / 3)
+                 const dipoleSize = Math.min(d_visual * 0.2, 0.2)
+                 const sep = dipoleSize * 1.5
+                 return (
+                   <group key={`dipole-${i}-${j}`} position={[x, 0, z]}>
+                      {/* Carga inducida negativa arriba, cerca de la placa positiva */}
+                      <Sphere args={[dipoleSize, 16, 16]} position={[0, sep/2, 0]}>
+                        <meshStandardMaterial color="#B69BE8" />
+                      </Sphere>
+                      {/* Carga inducida positiva abajo, cerca de la placa negativa */}
+                      <Sphere args={[dipoleSize, 16, 16]} position={[0, -sep/2, 0]}>
+                        <meshStandardMaterial color="#F27C77" />
+                      </Sphere>
+                   </group>
+                 )
+               })
+             )}
+           </group>
         )}
 
         {/* Placa inferior (-) */}

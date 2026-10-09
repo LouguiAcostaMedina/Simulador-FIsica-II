@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useCapacitorSimulation } from './useCapacitorSimulation'
 import { Capacitor3DView } from './Capacitor3DView'
+import { SimpleLineChart } from '../../../shared/ui/SimpleLineChart'
+import { CapacitorMath } from '../domain/CapacitorMath'
 import './CapacitorsModule.css'
 
 export default function CapacitorsModule() {
@@ -79,6 +81,41 @@ export default function CapacitorsModule() {
              </ul>
           )}
         </section>
+
+        {isValid && (
+          <section className="control-group">
+            <h3>Gráficas</h3>
+            <SimpleLineChart 
+               data={Array.from({length: 20}).map((_, i) => {
+                 const dTest = 0.0001 + i * 0.0005; // 0.1mm to 10mm approx
+                 const cTest = CapacitorMath.evaluate({ ...state, d: dTest }).C;
+                 return { x: dTest * 1000, y: cTest * 1e12 };
+               })}
+               title="Capacitancia vs Distancia"
+               xLabel="d (mm)"
+               yLabel="C (pF)"
+               currentValue={state.d * 1000}
+               width={280}
+               height={150}
+            />
+            <SimpleLineChart 
+               data={Array.from({length: 20}).map((_, i) => {
+                 const vTest = 1 + i * 1; 
+                 const qTest = 1e-12 + i * 1e-12;
+                 const testState = state.mode === 'fixed_V' ? { ...state, sourceValue: vTest } : { ...state, sourceValue: qTest };
+                 const mTest = CapacitorMath.evaluate(testState);
+                 return { x: state.mode === 'fixed_V' ? vTest : qTest * 1e12, y: mTest.U * 1e12 };
+               })}
+               title={state.mode === 'fixed_V' ? "Energía vs Voltaje" : "Energía vs Carga"}
+               xLabel={state.mode === 'fixed_V' ? "V (V)" : "Q (pC)"}
+               yLabel="U (pJ)"
+               currentValue={state.mode === 'fixed_V' ? state.sourceValue : state.sourceValue * 1e12}
+               color="#F5A66A"
+               width={280}
+               height={150}
+            />
+          </section>
+        )}
 
       </aside>
       
