@@ -83,10 +83,35 @@ export function Electric2DView({ charges, testParticle, trajectory, scale, onCha
     const toWorld = (x: number, y: number) => new Vector3((x - cx) / scale, -(y - cy) / scale, 0)
     const toScreen = (v: Vector3) => ({ x: cx + v.x * scale, y: cy - v.y * scale })
 
-    // 1. Dibujar mapa de potencial (Líneas equipotenciales simplificadas por contornos crudos o heatmap)
-    // Para mantener el rendimiento en JS, dibujaremos campos direccionales por ahora 
-    // y añadiremos líneas equipotenciales en un step separado si es muy lento.
-    // Pintaremos las líneas del campo:
+    // 1. Dibujar mapa de potencial (Líneas equipotenciales)
+    // Utilizamos una rejilla gruesa y bandas de contorno para evitar caída de rendimiento
+    if (charges.length > 0) {
+      const eqStep = 4
+      const contourInterval = 2000 // Dibujar línea cada 2000V
+      const tolerance = 200 // Grosor de la línea en voltios
+
+      ctx.fillStyle = 'rgba(182, 155, 232, 0.3)' // Lila suave para equipotenciales
+      for (let x = 0; x < width; x += eqStep) {
+        for (let y = 0; y < height; y += eqStep) {
+          const wPos = toWorld(x, y)
+          try {
+            const V = FieldMath.evaluatePotential(charges, wPos)
+            const Vabs = Math.abs(V)
+            // Si Vabs está cerca de un múltiplo de contourInterval
+            const remainder = Vabs % contourInterval
+            if (remainder < tolerance || contourInterval - remainder < tolerance) {
+              // Diferenciar color por signo
+              ctx.fillStyle = V > 0 ? 'rgba(242, 124, 119, 0.4)' : 'rgba(182, 155, 232, 0.4)'
+              ctx.fillRect(x, y, eqStep, eqStep)
+            }
+          } catch (e) {
+            // singularidad
+          }
+        }
+      }
+    }
+
+    // 1.5 Dibujar cuadrícula de campo vectorial
     const step = 40
     ctx.strokeStyle = 'rgba(66, 215, 200, 0.3)'
     for (let x = 0; x < width; x += step) {

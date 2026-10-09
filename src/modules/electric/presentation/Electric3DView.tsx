@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Sphere, Line } from '@react-three/drei'
+import { OrbitControls, Sphere, Line, MarchingCubes, MarchingCube } from '@react-three/drei'
+import { Color } from 'three'
 import { Charge, TestParticle } from '../domain/Charge'
 import { Vector3 } from '../../../shared/domain/Vector3'
 
@@ -22,6 +23,22 @@ export function Electric3DView({ charges, testParticle, trajectory }: Props) {
       <directionalLight position={[10, 10, 5]} intensity={1} />
       <OrbitControls />
       
+      {/* Superficies equipotenciales 3D (Metaballs como aproximación visual cualitativa) */}
+      {charges.length > 0 && (
+        <MarchingCubes resolution={40} maxPolyCount={20000} enableUvs={false} enableColors={true}>
+          <meshPhysicalMaterial transmission={0.6} opacity={1} transparent roughness={0.1} />
+          {charges.map(c => (
+            <MarchingCube 
+              key={`mc-${c.id}`} 
+              strength={Math.abs(c.q) * 1e6 * 0.5} // Escalado cualitativo
+              subtract={10} 
+              color={new Color(c.q > 0 ? '#F27C77' : '#B69BE8')} 
+              position={[c.position.x, c.position.y, c.position.z]} 
+            />
+          ))}
+        </MarchingCubes>
+      )}
+
       {/* Cargas */}
       {charges.map(c => (
         <Sphere key={c.id} args={[0.2, 32, 32]} position={[c.position.x, c.position.y, c.position.z]}>
