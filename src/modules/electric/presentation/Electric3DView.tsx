@@ -32,7 +32,7 @@ export function Electric3DView({ charges, testParticle, trajectory, onContextLos
       <directionalLight position={[10, 10, 5]} intensity={1} />
       <OrbitControls />
       
-      {/* Superficies equipotenciales 3D (Metaballs como aproximación visual cualitativa) */}
+      {/* Visualización volumétrica de proximidad a las cargas (Metaballs cualitativas, NO son superficies equipotenciales exactas) */}
       {charges.length > 0 && (
         <MarchingCubes resolution={40} maxPolyCount={20000} enableUvs={false} enableColors={true}>
           <meshPhysicalMaterial transmission={0.6} opacity={1} transparent roughness={0.1} />

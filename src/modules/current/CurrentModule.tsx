@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { CircuitNode, CircuitSolver } from './domain/CircuitSolver'
 import { CircuitView } from './CircuitView'
 import { RCView } from './RCView'
+import { SimpleLineChart } from '../../shared/ui/SimpleLineChart'
 
 export default function CurrentModule() {
   const [activeTab, setActiveTab] = useState<'ohm' | 'rc'>('ohm')
@@ -17,7 +18,13 @@ export default function CurrentModule() {
   })
 
   // Evaluated tree
-  const solvedTree = useMemo(() => CircuitSolver.solveTree(root, voltage), [root, voltage])
+  const { solvedTree, error } = useMemo(() => {
+    try {
+      return { solvedTree: CircuitSolver.solveTree(root, voltage), error: null }
+    } catch (e: any) {
+      return { solvedTree: null, error: e.message }
+    }
+  }, [root, voltage])
 
   // Helper to add nodes
   const addNode = (parentId: string, type: 'resistor' | 'series' | 'parallel') => {
@@ -88,17 +95,40 @@ export default function CurrentModule() {
 
             <section className="control-group">
               <h3>Resultados Totales</h3>
-              <ul className="metrics-list">
-                <li>R Equivalente: <span>{solvedTree.Req?.toFixed(2)} Ω</span></li>
-                <li>Corriente I: <span>{solvedTree.I?.toFixed(2)} A</span></li>
-                <li>Potencia P: <span>{solvedTree.P?.toFixed(2)} W</span></li>
-              </ul>
+              {error ? (
+                <div className="error-panel">{error}</div>
+              ) : (
+                <ul className="metrics-list">
+                  <li>R Equivalente: <span>{solvedTree?.Req?.toFixed(2)} Ω</span></li>
+                  <li>Corriente I: <span>{solvedTree?.I?.toFixed(2)} A</span></li>
+                  <li>Potencia P: <span>{solvedTree?.P?.toFixed(2)} W</span></li>
+                </ul>
+              )}
             </section>
 
             <section className="control-group">
               <h3>Balance de Potencia</h3>
               <p className="caption">La potencia entregada por la fuente debe ser igual a la suma de la potencia disipada por las resistencias.</p>
             </section>
+
+            {!error && solvedTree?.Req && solvedTree.Req > 0 && solvedTree.Req !== Infinity && (
+              <section className="control-group">
+                <h3>Ley de Ohm (Red Completa)</h3>
+                <SimpleLineChart 
+                  data={Array.from({length: 20}).map((_, i) => {
+                    const vTest = i * 2; // de 0 a 38V
+                    return { x: vTest, y: vTest / solvedTree.Req! };
+                  })}
+                  title="Corriente vs Voltaje (I-V)"
+                  xLabel="V (V)"
+                  yLabel="I (A)"
+                  currentValue={voltage}
+                  width={280}
+                  height={150}
+                  color="#B69BE8"
+                />
+              </section>
+            )}
           </>
         )}
         
@@ -113,13 +143,20 @@ export default function CurrentModule() {
       <main className="electric-canvas-area">
         <div className="canvas-container circuit-container">
            {activeTab === 'ohm' ? (
-             <CircuitView 
-               node={solvedTree} 
-               onAdd={addNode} 
-               onRemove={removeNode} 
-               onUpdate={updateResistor} 
-               isRoot={true} 
-             />
+             error ? (
+                <div className="error-panel" style={{ margin: '2rem' }}>
+                  <h3>Error Físico en el Circuito</h3>
+                  <p>{error}</p>
+                </div>
+             ) : (
+                solvedTree && <CircuitView 
+                  node={solvedTree} 
+                  onAdd={addNode} 
+                  onRemove={removeNode} 
+                  onUpdate={updateResistor} 
+                  isRoot={true} 
+                />
+             )
            ) : (
              <RCView />
            )}

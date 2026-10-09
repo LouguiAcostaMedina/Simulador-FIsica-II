@@ -1,8 +1,57 @@
-import React, { useMemo, useState, useEffect } from 'react'
-import { Canvas } from '@react-three/fiber'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Cylinder, Sphere, Line } from '@react-three/drei'
 import { Vector3 } from '../../../shared/domain/Vector3'
 import { MagnetismMath } from '../domain/MagnetismMath'
+
+function LorentzParticle({ mode, I, BExt, EExt, showLorentz, q, v0, particlePosRef, trajectory, setTrajectory }: any) {
+  const velRef = useRef(v0);
+
+  useEffect(() => {
+    particlePosRef.current = new Vector3(2, 0, 0);
+    velRef.current = v0;
+    setTrajectory([new Vector3(2, 0, 0)]);
+  }, [mode, I, BExt, EExt, showLorentz, q, v0]);
+
+  useFrame((state, delta) => {
+    if (!showLorentz) return;
+    const dt = Math.min(delta, 0.05); // cap dt
+    
+    let BLocal = BExt;
+    if (mode === 'wire') {
+      try {
+        BLocal = BLocal.add(MagnetismMath.evaluateWireBField(I, new Vector3(0,1,0), new Vector3(0,0,0), particlePosRef.current));
+      } catch (e) {}
+    } else if (mode === 'dipole') {
+      try {
+        BLocal = BLocal.add(MagnetismMath.evaluateDipoleBField(new Vector3(0, I * 0.1, 0), new Vector3(0,0,0), particlePosRef.current));
+      } catch (e) {}
+    }
+    
+    const F = MagnetismMath.evaluateLorentzForce(q, EExt, velRef.current, BLocal);
+    const mass = 1; 
+    const a = F.multiply(1 / mass);
+    
+    velRef.current = velRef.current.add(a.multiply(dt));
+    particlePosRef.current = particlePosRef.current.add(velRef.current.multiply(dt));
+    
+    // Solo actualiza la UI de React de la trayectoria de a ratos para evitar lag,
+    // pero actualiza la posición del mesh directamente aquí para suavidad
+    if (state.clock.elapsedTime * 60 % 2 < 1) {
+       setTrajectory((prev: Vector3[]) => {
+          const next = [...prev, particlePosRef.current];
+          if (next.length > 200) next.shift();
+          return next;
+       });
+    }
+  });
+
+  return (
+     <Sphere args={[0.1, 16, 16]} position={[particlePosRef.current.x, particlePosRef.current.y, particlePosRef.current.z]}>
+       <meshStandardMaterial color={q > 0 ? '#F27C77' : '#B69BE8'} />
+     </Sphere>
+  );
+}
 
 interface Props {
   mode: 'wire' | 'dipole'
@@ -16,68 +65,8 @@ interface Props {
 }
 
 export function Magnetism3DView({ mode, I, BExt, EExt, showLorentz, q, v0, onContextLost }: Props) {
-  const [particlePos, setParticlePos] = useState(new Vector3(2, 0, 0))
-  const [particleVel, setParticleVel] = useState(v0)
+  const particlePosRef = useRef(new Vector3(2, 0, 0))
   const [trajectory, setTrajectory] = useState<Vector3[]>([new Vector3(2, 0, 0)])
-
-  // Reset particle when conditions change
-  useEffect(() => {
-    setParticlePos(new Vector3(2, 0, 0));
-    setParticleVel(v0);
-    setTrajectory([new Vector3(2, 0, 0)]);
-  }, [mode, I, BExt, EExt, showLorentz, q, v0]);
-
-  useEffect(() => {
-    if (!showLorentz) return;
-    
-    let frame: number;
-    let lastTime = performance.now();
-    
-    const loop = (time: number) => {
-      const dt = Math.min((time - lastTime) / 1000, 0.05); // cap dt
-      lastTime = time;
-      
-      setParticlePos(prevPos => {
-        setParticleVel(prevVel => {
-          // B at current position
-          let BLocal = BExt;
-          if (mode === 'wire') {
-            try {
-              const Bw = MagnetismMath.evaluateWireBField(I, new Vector3(0,1,0), new Vector3(0,0,0), prevPos);
-              BLocal = BLocal.add(Bw);
-            } catch (e) {}
-          } else if (mode === 'dipole') {
-            try {
-              const m = new Vector3(0, I * 0.1, 0); // Approximation
-              const Bd = MagnetismMath.evaluateDipoleBField(m, new Vector3(0,0,0), prevPos);
-              BLocal = BLocal.add(Bd);
-            } catch (e) {}
-          }
-          
-          const F = MagnetismMath.evaluateLorentzForce(q, EExt, prevVel, BLocal);
-          const mass = 1; // Assuming m=1 for simplicity
-          const a = F.multiply(1 / mass);
-          
-          const newVel = prevVel.add(a.multiply(dt));
-          const newPos = prevPos.add(newVel.multiply(dt));
-          
-          setTrajectory(prev => {
-            const next = [...prev, newPos];
-            if (next.length > 200) next.shift(); // limit trajectory length
-            return next;
-          });
-          
-          return newVel;
-        });
-        return particlePos; // Value doesn't matter since it's updated in tandem
-      });
-      
-      frame = requestAnimationFrame(loop);
-    };
-    
-    frame = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frame);
-  }, [showLorentz, mode, I, BExt, EExt, q]);
 
   const points = useMemo(() => {
     return trajectory.map(p => [p.x, p.y, p.z] as [number, number, number])
@@ -96,6 +85,56 @@ export function Magnetism3DView({ mode, I, BExt, EExt, showLorentz, q, v0, onCon
     }
     return rings;
   }, [mode]);
+
+  // Calculated Field lines for dipole
+  const dipoleLines = useMemo(() => {
+    if (mode !== 'dipole') return null;
+    const lines = [];
+    const m = new Vector3(0, I * 0.1, 0); // Using the same approximation
+    
+    // Generamos varias líneas desde el hemisferio superior
+    for (let theta = 0.2; theta <= Math.PI / 2 - 0.2; theta += 0.3) {
+      for (let phi = 0; phi < Math.PI * 2; phi += Math.PI / 2) {
+         let r = 0.3; // starting radius
+         let pos = new Vector3(
+           r * Math.sin(theta) * Math.cos(phi),
+           r * Math.cos(theta),
+           r * Math.sin(theta) * Math.sin(phi)
+         );
+         
+         const pts = [];
+         let outOfBounds = false;
+         for (let step = 0; step < 200; step++) {
+           pts.push([pos.x, pos.y, pos.z] as [number, number, number]);
+           try {
+             const B = MagnetismMath.evaluateDipoleBField(m, new Vector3(0,0,0), pos);
+             const mag = B.length();
+             if (mag < 1e-10) break;
+             const dir = B.multiplyScalar(1 / mag);
+             // paso proporcional al campo para más precisión cerca del origen, pero acotado
+             const ds = 0.05; 
+             pos = pos.add(dir.multiplyScalar(ds));
+             
+             // Si volvió cerca del origen en el hemisferio sur, terminar
+             if (pos.y < 0 && pos.length() < 0.35) {
+                pts.push([pos.x, pos.y, pos.z] as [number, number, number]);
+                break;
+             }
+             if (pos.length() > 10) {
+                outOfBounds = true;
+                break; // Muy lejos
+             }
+           } catch {
+             break;
+           }
+         }
+         if (!outOfBounds && pts.length > 5) {
+            lines.push(pts);
+         }
+      }
+    }
+    return lines;
+  }, [mode, I]);
 
   return (
     <Canvas 
@@ -130,14 +169,18 @@ export function Magnetism3DView({ mode, I, BExt, EExt, showLorentz, q, v0, onCon
           <Sphere args={[0.2, 16, 16]} position={[0, 0.5, 0]}>
             <meshStandardMaterial color="#B69BE8" />
           </Sphere>
+          {dipoleLines?.map((pts, i) => (
+             <Line key={i} points={pts} color="#42D7C8" lineWidth={1.5} opacity={0.6} transparent />
+          ))}
         </group>
       )}
 
       {showLorentz && (
          <group>
-           <Sphere args={[0.1, 16, 16]} position={[particlePos.x, particlePos.y, particlePos.z]}>
-             <meshStandardMaterial color={q > 0 ? '#F27C77' : '#B69BE8'} />
-           </Sphere>
+           <LorentzParticle 
+              mode={mode} I={I} BExt={BExt} EExt={EExt} showLorentz={showLorentz} q={q} v0={v0}
+              particlePosRef={particlePosRef} trajectory={trajectory} setTrajectory={setTrajectory}
+           />
            {points.length > 1 && <Line points={points} color="#F5A66A" lineWidth={2} />}
          </group>
       )}

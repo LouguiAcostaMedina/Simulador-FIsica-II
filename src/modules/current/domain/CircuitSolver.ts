@@ -18,7 +18,7 @@ export class CircuitSolver {
       return node.R || 0;
     }
     
-    if (!node.children || node.children.length === 0) return 0;
+    if (!node.children || node.children.length === 0) return Infinity; // Open circuit
 
     if (node.type === 'series') {
       let req = 0;
@@ -35,15 +35,24 @@ export class CircuitSolver {
         if (r === 0) return 0; // Short circuit
         invReq += 1 / r;
       }
-      return invReq === 0 ? 0 : 1 / invReq;
+      return invReq === 0 ? Infinity : 1 / invReq;
     }
 
-    return 0;
+    return Infinity;
   }
   
   static solveTree(node: CircuitNode, V_total: number): CircuitNode {
     const Req = this.evaluateEquivalentResistance(node);
-    const I_total = Req > 0 ? V_total / Req : 0;
+    
+    if (Req === 0 && V_total > 0) {
+      throw new Error("Cortocircuito detectado: Resistencia equivalente nula con voltaje de fuente.");
+    }
+    
+    if (Req === Infinity) {
+      throw new Error("Circuito abierto: La red no tiene caminos válidos para la corriente.");
+    }
+    
+    const I_total = V_total / Req;
     
     return this.propagateVoltageCurrent(node, V_total, I_total);
   }

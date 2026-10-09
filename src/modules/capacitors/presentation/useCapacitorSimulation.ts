@@ -32,7 +32,21 @@ export function useCapacitorSimulation() {
   }, [originalState])
 
   const setParam = (key: keyof CapacitorState, value: any) => {
-    setState(prev => ({ ...prev, [key]: value }))
+    setState(prev => {
+      if (key === 'mode' && prev.mode !== value) {
+        // Evaluate the current state before switching
+        try {
+          const currentMetrics = CapacitorMath.evaluate(prev)
+          // If switching to fixed_Q, the new sourceValue should be the current charge Q
+          // If switching to fixed_V, the new sourceValue should be the current voltage V
+          const newSourceValue = value === 'fixed_Q' ? currentMetrics.Q : currentMetrics.V
+          return { ...prev, mode: value, sourceValue: newSourceValue }
+        } catch {
+          // If invalid, just switch
+        }
+      }
+      return { ...prev, [key]: value }
+    })
   }
   
   const setBaseLine = () => {

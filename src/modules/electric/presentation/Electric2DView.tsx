@@ -113,7 +113,7 @@ export function Electric2DView({ charges, testParticle, trajectory, scale, onCha
 
     // 1.5 Dibujar cuadrícula de campo vectorial
     const step = 40
-    ctx.strokeStyle = 'rgba(66, 215, 200, 0.3)'
+    ctx.strokeStyle = 'rgba(66, 215, 200, 0.15)' // Reducimos opacidad para no competir con las líneas
     for (let x = 0; x < width; x += step) {
       for (let y = 0; y < height; y += step) {
         if (charges.length === 0) continue
@@ -128,13 +128,72 @@ export function Electric2DView({ charges, testParticle, trajectory, scale, onCha
             ctx.moveTo(x, y)
             ctx.lineTo(x + E_norm.x * length, y - E_norm.y * length)
             ctx.stroke()
-            ctx.fillStyle = 'rgba(66, 215, 200, 0.5)'
+            ctx.fillStyle = 'rgba(66, 215, 200, 0.3)'
             ctx.fillRect(x + E_norm.x * length - 1, y - E_norm.y * length - 1, 3, 3)
           }
         } catch (e) {
           // Singularity
         }
       }
+    }
+
+    // 1.8 Líneas de campo continuas
+    if (charges.length > 0) {
+      ctx.strokeStyle = 'rgba(66, 215, 200, 0.8)'
+      ctx.lineWidth = 1.5
+      
+      const seedRadius = 0.1
+      const stepSize = 0.05
+      const maxSteps = 400
+
+      charges.forEach(c => {
+        // Solo sembrar líneas desde cargas positivas o si es negativa pero no hay positivas (para ver el campo)
+        const numLines = 8
+        for (let i = 0; i < numLines; i++) {
+          const angle = (i / numLines) * Math.PI * 2
+          let currentPos = new Vector3(
+            c.position.x + Math.cos(angle) * seedRadius,
+            c.position.y + Math.sin(angle) * seedRadius,
+            0
+          )
+          
+          let forward = c.q > 0
+          
+          ctx.beginPath()
+          const startScreen = toScreen(currentPos)
+          ctx.moveTo(startScreen.x, startScreen.y)
+          
+          for (let step = 0; step < maxSteps; step++) {
+            try {
+              const E = FieldMath.evaluateField(charges, currentPos)
+              const mag = E.length()
+              if (mag < 1e-5) break // Campo nulo
+
+              const dir = E.multiplyScalar((forward ? 1 : -1) / mag)
+              currentPos = currentPos.add(dir.multiplyScalar(stepSize))
+              
+              // Si se acerca mucho a otra carga, terminar la línea
+              let hitOther = false
+              for (const otherC of charges) {
+                if (currentPos.sub(otherC.position).length() < seedRadius * 0.9) {
+                  hitOther = true
+                  break
+                }
+              }
+              if (hitOther) break
+
+              const sPos = toScreen(currentPos)
+              // Salida de pantalla gruesa
+              if (sPos.x < -100 || sPos.x > width + 100 || sPos.y < -100 || sPos.y > height + 100) break
+
+              ctx.lineTo(sPos.x, sPos.y)
+            } catch (e) {
+              break
+            }
+          }
+          ctx.stroke()
+        }
+      })
     }
 
     // 2. Dibujar trayectoria

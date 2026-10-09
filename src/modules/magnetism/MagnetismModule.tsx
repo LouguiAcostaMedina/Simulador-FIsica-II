@@ -69,6 +69,16 @@ export default function MagnetismModule() {
              <li>Lorentz: <span>F = q(E + v × B)</span></li>
           </ul>
         </section>
+
+        <section className="control-group">
+          <h3>Resultados de la Partícula</h3>
+          <ul className="metrics-list">
+             <li>Vel. Inicial v₀: <span>(0, 0, {vz}) m/s</span></li>
+             <li>Campo E: <span>(0, {Ey}, 0) N/C</span></li>
+             <li>Campo BExt: <span>(0, 0, 0) T</span></li>
+             <li>Nota: <span>La fuerza instantánea y trayectoria se calculan y dibujan en la vista 3D.</span></li>
+          </ul>
+        </section>
       </aside>
 
       <main className="electric-canvas-area">
