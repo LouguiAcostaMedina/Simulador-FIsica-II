@@ -5,6 +5,7 @@ import { Capacitor3DView } from './Capacitor3DView'
 import { SimpleLineChart } from '../../../shared/ui/SimpleLineChart'
 import { CapacitorMath } from '../domain/CapacitorMath'
 import { isWebGLAvailable } from '../../../shared/ui/isWebGLAvailable'
+import './CapacitorsModule.css'
 
 export default function CapacitorsModule() {
   const { state, metrics, originalMetrics, setParam, setBaseLine, clearBaseLine } = useCapacitorSimulation()
@@ -56,7 +57,7 @@ export default function CapacitorsModule() {
           <div className="error-panel">Los valores deben ser positivos (A&gt;0, d&gt;0, εr&ge;1).</div>
         )}
 
-        <section className="control-group">
+        <section className="control-group capacitor-specific-group">
           <h3>Resultados</h3>
           {metrics && (
             <ul className="metrics-list">
@@ -69,7 +70,7 @@ export default function CapacitorsModule() {
           )}
         </section>
         
-        <section className="control-group">
+        <section className="control-group capacitor-specific-group">
           <h3>Comparación</h3>
           <div className="sim-controls">
             <button onClick={setBaseLine}>Fijar Escenario</button>
