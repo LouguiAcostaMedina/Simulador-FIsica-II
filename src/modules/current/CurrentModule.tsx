@@ -5,6 +5,7 @@ import { CircuitView } from './CircuitView'
 import { RCView } from './RCView'
 import { SimpleLineChart } from '../../shared/ui/SimpleLineChart'
 import { CircuitLaboratoryView } from './presentation/CircuitLaboratoryView'
+import { ElectrodynamicsView } from './presentation/ElectrodynamicsView'
 
 export default function CurrentModule() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -16,7 +17,7 @@ export default function CurrentModule() {
     setSearchParams({ mode })
   }
 
-  const [activeTab, setActiveTab] = useState<'ohm' | 'rc'>('ohm')
+  const [activeTab, setActiveTab] = useState<'ohm' | 'micro' | 'rc'>('ohm')
   const [voltage, setVoltage] = useState(12)
   const [root, setRoot] = useState<CircuitNode>({
     id: 'root',
@@ -112,9 +113,10 @@ export default function CurrentModule() {
           </button>
         </div>
 
-        <div className="sim-controls" style={{ padding: '0 1rem' }}>
-           <button className={activeTab === 'ohm' ? '' : 'secondary'} onClick={() => setActiveTab('ohm')}>Ohm y Circuitos</button>
-           <button className={activeTab === 'rc' ? '' : 'secondary'} onClick={() => setActiveTab('rc')}>Circuito RC</button>
+        <div className="sim-controls" style={{ padding: '0 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+           <button className={activeTab === 'ohm' ? '' : 'secondary'} onClick={() => setActiveTab('ohm')}>1. Ohm y Redes en Árbol</button>
+           <button className={activeTab === 'micro' ? '' : 'secondary'} onClick={() => setActiveTab('micro')}>2. Electrodinámica (J, vd, R)</button>
+           <button className={activeTab === 'rc' ? '' : 'secondary'} onClick={() => setActiveTab('rc')}>3. Circuito RC Transitorio</button>
         </div>
         
         {activeTab === 'ohm' && (
@@ -165,6 +167,16 @@ export default function CurrentModule() {
           </>
         )}
         
+        {activeTab === 'micro' && (
+          <section className="control-group">
+            <h3>Electrodinámica Microscópica</h3>
+            <p className="caption">
+              Relaciona la corriente I con el flujo de cargas: I = ΔQ/Δt, densidad de corriente J = I/A,
+              velocidad de deriva vd = I/(n·e·A) y resistencia geométrica R = ρL/A.
+            </p>
+          </section>
+        )}
+
         {activeTab === 'rc' && (
           <section className="control-group">
             <h3>Carga y Descarga</h3>
@@ -175,7 +187,7 @@ export default function CurrentModule() {
 
       <main className="electric-canvas-area">
         <div className="canvas-container circuit-container">
-           {activeTab === 'ohm' ? (
+           {activeTab === 'ohm' && (
              error ? (
                 <div className="error-panel" style={{ margin: '2rem' }}>
                   <h3>Error Físico en el Circuito</h3>
@@ -190,9 +202,9 @@ export default function CurrentModule() {
                   isRoot={true} 
                 />
              )
-           ) : (
-             <RCView />
            )}
+           {activeTab === 'micro' && <ElectrodynamicsView />}
+           {activeTab === 'rc' && <RCView />}
         </div>
       </main>
     </div>

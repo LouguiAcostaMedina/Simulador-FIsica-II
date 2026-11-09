@@ -72,12 +72,37 @@
 ---
 
 ## Hito 3 — Renovación del Simulador U3 e Integración Didáctica
-- **Estado:** Pendiente
+- **Estado:** COMPLETADO (APROBADO)
+- **Implementado:**
+  - Integración didáctica de Electrodinámica Microscópica en `ElectrodynamicsView.tsx` y `ElectrodynamicsView.css`:
+    - Relación de flujo de portadores $I = \Delta Q / \Delta t$, densidad de corriente $J = I / A$ y velocidad de deriva $v_d = I / (n \cdot e \cdot A)$.
+    - Resistencia geométrica $R = \rho L / A$ con 5 materiales reales (Cobre, Plata, Aluminio, Oro, Tungsteno).
+    - Diagrama explicativo que contrasta el sentido de corriente convencional con la deriva de electrones (modelo de Drude) y explica la aparente paradoja de la velocidad microscópica ($v_d \sim 0.1\text{ mm/s}$) frente a la velocidad de propagación de la onda electromagnética ($c \sim 2\times 10^8\text{ m/s}$).
+  - Renovación del simulador de transitorios `RCView.tsx` y `RCView.css`:
+    - Incorporación de `ScientificChart` con series duales para $V(t)$ e $I(t)$ y cursor crosshair.
+    - Corrección del signo de corriente en descarga: opción conmutable entre magnitud $|I|$ y convención física con signo negativo ($-I$).
+    - Esquema animado del circuito RC con acumulación de carga en placas $Q(t) = C \cdot V(t)$.
+    - Controles de reproducción: Iniciar/Pausar, Paso (+0.1τ), Reiniciar y selector de velocidad (0.5x, 1x, 2x).
+  - Selector de sub-vistas didácticas en el Simulador de U3:
+    - 1. Ohm y Redes en Árbol (`CircuitView.tsx`).
+    - 2. Electrodinámica (`ElectrodynamicsView.tsx`).
+    - 3. Circuito RC Transitorio (`RCView.tsx`).
+  - Pruebas analíticas adicionales en `CurrentMath.test.ts` cubriendo cálculo de $J, v_d$, validación de áreas nulas y valores negativos.
+- **Verificación:**
+  - `npm test`: 22 pruebas aprobadas en 7 archivos.
+  - `npm run typecheck`: 0 errores de tipado.
+  - `npm run lint`: 0 errores, 0 warnings.
+  - `npm run build`: Compilación exitosa en 40.3s.
+
+---
+
+## Hito 4 — U1: Simulador y Laboratorio de Electrostática
+- **Estado:** En progreso
 - **Objetivos:**
-  - Renovar la presentación del Simulador U3 (conservando el `CircuitSolver` de árbol y `RCView`).
-  - Integrar en la UI las magnitudes físicas de electrodinámica: $I=\Delta Q/\Delta t$, densidad de corriente $J=I/A$, velocidad de deriva $v_d=I/(n|q|A)$ y resistencia material $R=\rho L/A$.
-  - Explicar y contrastar en pantalla el sentido de corriente convencional frente a la deriva real de electrones.
-  - Reparar el signo físico de la corriente en la descarga del circuito RC ($\tau = RC$), manteniendo magnitudes positivas o convención explícita con pausa y reinicio.
+  - Corregir el snapshot de condiciones iniciales en U1 para reinicio reproducible de la partícula de prueba ($x_0, y_0, v_{0x}, v_{0y}, q, m$).
+  - Isolíneas equipotenciales exactas en 2D (algoritmo Marching Squares sobre malla de potencial escalar $V(x,y)$ en lugar de bandas de color discretas).
+  - Laboratorio de electrostática con arrastre de cargas positivas y negativas, sondas de campo $E$ y potencial $V$, capas conmutables e inspector contextual.
+
 
 
 

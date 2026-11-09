@@ -1,0 +1,174 @@
+.electrodynamics-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.electro-header-box {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+}
+
+.electro-header-box h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.2rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-ivory);
+}
+
+.electro-header-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.electro-header-box code {
+  color: var(--color-accent-turquoise);
+  font-family: var(--font-mono);
+}
+
+.electro-main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .electro-main-grid {
+    grid-template-columns: 340px 1fr;
+  }
+  .electro-results-card {
+    grid-column: 1 / -1;
+  }
+}
+
+.electro-controls-card,
+.electro-visual-card,
+.electro-results-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.electro-controls-card h4,
+.electro-visual-card h4,
+.electro-results-card h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  color: var(--color-accent-turquoise);
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: 0.5rem;
+}
+
+.electro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.electro-field label {
+  font-size: 0.85rem;
+  color: var(--color-text-ivory);
+  display: flex;
+  justify-content: space-between;
+}
+
+.electro-field input[type="range"] {
+  accent-color: var(--color-accent-turquoise);
+  cursor: pointer;
+}
+
+.electro-select {
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-ivory);
+  padding: 0.45rem;
+  font-size: 0.85rem;
+}
+
+.electro-helper {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.wire-svg-wrapper {
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+}
+
+.wire-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.electro-paradox-box {
+  background: var(--color-bg-surface-elevated);
+  border: 1px solid rgba(245, 166, 106, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.electro-paradox-box strong {
+  color: var(--color-accent-copper);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.highlight-val {
+  color: var(--color-accent-turquoise);
+  font-weight: bold;
+  font-family: var(--font-mono);
+}
+
+.electro-metrics-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.electro-metric-item {
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.electro-metric-item.highlight {
+  border-color: rgba(66, 215, 200, 0.4);
+  background: rgba(66, 215, 200, 0.05);
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.metric-value {
+  font-size: 1.05rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-text-ivory);
+}
+
