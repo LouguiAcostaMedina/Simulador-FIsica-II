@@ -1,0 +1,43 @@
+name: CI — Laboratorio Vectorial
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feat/**'
+      - 'fix/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  quality-checks:
+    name: Lint, Types, Tests & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar dependencias limpias
+        run: npm ci
+
+      - name: Verificación de ESLint
+        run: npm run lint
+
+      - name: Comprobación de tipos TypeScript
+        run: npm run typecheck
+
+      - name: Ejecución de pruebas analíticas e integración
+        run: npm test
+
+      - name: Compilación estática de producción
+        run: npm run build

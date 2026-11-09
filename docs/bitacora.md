@@ -183,19 +183,32 @@
 ---
 
 ## Hito 7 — Calidad, E2E, Documentación y Cierre
-- **Estado:** En progreso
-- **Objetivos:**
-  - Configurar GitHub Actions CI workflow en `.github/workflows/ci.yml` para ejecutar automáticamente `lint`, `typecheck`, `test` y `build`.
-  - Pruebas E2E / integración completa de flujos de usuario (navegación desde el Hub a las 4 unidades, alternancia entre Simulador y Laboratorio, y verificación de los laboratorios interactivos).
-  - Actualización exhaustiva de la documentación del proyecto conforme a la consigna académica:
-    - `README.md`: instalación, comandos, stack, estado real verificado de U1 a U4 (sin falsedades).
-    - `docs/plan.md`: backlog completo con criterios de aceptación observables y dependencias.
-    - `docs/arquitectura.md`: diagramas de flujo de cálculo desde la entrada de usuario hasta el renderizado (Clean Architecture pragmática, separación de dominio, aplicación y presentación).
-    - `docs/modelo-fisico.md`: ecuaciones, constantes, unidades SI, simplificaciones e hipótesis por cada una de las 4 unidades.
-    - `docs/validacion.md`: matriz de verificación de casos analíticos con valores teóricos vs obtenidos, tolerancias y comandos reales ejecutados.
-    - `docs/manual-usuario.md`: guía paso a paso de uso del Hub y los laboratorios interactivos (U1 a U4), controles, atajos de teclado y solución de problemas.
-    - `docs/guia-video.md`: guion y secuencia didáctica detallada para la grabación del video demostrativo de 5 a 10 minutos.
-    - `docs/diseno-ui.md`: tokens de diseño, principios visuales de "cuaderno experimental contemporáneo", paleta, accesibilidad y decisiones UX.
+- **Estado:** COMPLETADO (APROBADO)
+- **Implementado:**
+  - Pipeline de Integración Continua (CI) en `.github/workflows/ci.yml`:
+    - Ejecución en Ubuntu Latest sobre Node.js 22.x con `npm ci`.
+    - Pasos automáticos de verificación: `npm run lint`, `npm run typecheck`, `npm test` y `npm run build`.
+  - Suite de pruebas E2E / Integración en `src/app/AppNavigation.test.tsx`:
+    - Verificación del renderizado del Hub principal con sus 4 unidades operativas.
+    - Navegación e inicialización del Laboratorio U1 (Electricidad y Campo) con mesa de cargas.
+    - Navegación e inicialización del Laboratorio U2 (Capacitores) con placas interactivas.
+    - Navegación e inicialización del Laboratorio U3 (Circuitos DC) con editor esquemático MNA.
+    - Navegación e inicialización del Laboratorio U4 (Magnetismo) con brújula y Lorentz.
+  - Documentación técnica y académica completa y sincronizada:
+    - `README.md`: Visión del producto, arquitectura, instalación, mapa de unidades U1 a U4 con estado operativo verificado y tabla de atajos.
+    - `docs/plan.md`: Backlog ordenado, criterios de aceptación observables y dependencias técnicas.
+    - `docs/arquitectura.md`: Diagramas Mermaid de arquitectura en capas, flujo de cálculo MNA en U3 y Boris Pusher en U4.
+    - `docs/modelo-fisico.md`: Formulación matemática rigurosa, constantes SI, hipótesis y límites para las cuatro unidades.
+    - `docs/validacion.md`: Matriz exhaustiva con 16 casos analíticos contrastados contra resultados simulados (tolerancias $< 10^{-6}$ y rapidez en Boris $< 10^{-10}$).
+    - `docs/manual-usuario.md`: Guía de operación para estudiantes y docentes, controles de ratón/teclado, presets y diagnóstico de errores.
+    - `docs/guia-video.md`: Guion sincronizado de 8 minutos y 30 segundos estructurado en 6 bloques para la defensa académica.
+    - `docs/diseno-ui.md`: Sistema de diseño, tokens CSS, componentes `LabShell`, `Inspector` y `ScientificChart`, criterios de accesibilidad y adaptación responsive.
+- **Verificación:**
+  - `npm test`: 47 pruebas aprobadas en 12 suites (100% éxito).
+  - `npm run typecheck`: 0 errores de tipado en TypeScript.
+  - `npm run lint`: 0 errores, 0 advertencias de ESLint.
+  - `npm run build`: Compilación de producción estática en 43.1s sin advertencias de dependencias.
+
 
 
 
