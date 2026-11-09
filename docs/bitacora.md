@@ -152,16 +152,50 @@
 ---
 
 ## Hito 6 — U4: Simulador y Laboratorio de Magnetismo
+- **Estado:** COMPLETADO (APROBADO)
+- **Implementado:**
+  - Integrador Boris Pusher en `src/modules/magnetism/domain/MagnetismMath.ts`:
+    - Algoritmo simpléctico canónico de física de plasmas que descompone la evolución en dos semi-pasos eléctricos y una rotación magnética pura mediante transformada de Cayley.
+    - Conservación incondicional de la rapidez $|\vec{v}|$ y energía cinética cuando $\vec{E} = 0$, verificado a lo largo de 500 pasos con tolerancia numérica $< 10^{-8}$.
+    - Funciones analíticas de radio de Larmor $r_L = \frac{m v_\perp}{|q|B}$ y frecuencia de ciclotrón $\omega_c = \frac{|q|B}{m}$.
+  - Vista interactiva 2D `Magnetism2DView.tsx` y `Magnetism2DView.css`:
+    - Representación visual del conductor con corriente (símbolos $\odot$ hacia afuera y $\otimes$ hacia adentro con anillos de Biot-Savart).
+    - Dipolo magnético con polos Norte (rojo) y Sur (azul) y líneas de inducción cerradas.
+    - Región de campos cruzados $\vec{E} \perp \vec{B}$ para el selector de velocidades de Wien.
+    - Sonda móvil con aguja de brújula que se orienta en tiempo real con el vector $\vec{B}$ local y badge de lectura en $\mu\text{T}$.
+    - Partícula de prueba con vector de velocidad y traza de trayectoria.
+    - Integrado como fallback 2D funcional en `MagnetismModule.tsx` cuando WebGL no está disponible o falla.
+  - Laboratorio completo `MagnetismLaboratoryView.tsx` y `MagnetismLaboratoryView.css`:
+    - Integración con `LabShell`, selector de modo y dimensiones 2D/3D conmutables.
+    - Presets experimentales: Hilo con corriente ($B \propto 1/r$), Dipolo magnético ($B \propto 1/r^3$), Selector de velocidades de Wien ($v = E/B$) y Ciclotrón / Radio de Larmor.
+    - Inspector contextual: ajuste de corriente $I$, momento dipolar $m$, campos externos $E_y, B_z$, masa $m$, carga $q$ y velocidad $v_0$.
+    - Lectura en tiempo real de $|\vec{B}|$, rapidez $|\vec{v}|$, energía cinética $K$, $r_L$ y $\omega_c$.
+    - Gráfica dinámica `ScientificChart` con selector de curvas: $B(r)$ hiperbólica según Biot-Savart vs rapidez constante $|\vec{v}(t)|$ bajo Boris pusher.
+  - Pruebas unitarias y de integración:
+    - `MagnetismMath.test.ts`: 4 pruebas analíticas (dirección de Biot-Savart con regla de la mano derecha, fuerza de Lorentz, conservación estricta de rapidez en 500 pasos con Boris pusher y movimiento rectilíneo en selector de Wien).
+    - `MagnetismLaboratoryView.test.tsx`: 4 pruebas de interacción en DOM (renderizado, preset de Wien, preset de ciclotrón y ciclo de simulación con snapshot).
+- **Verificación:**
+  - `npm test`: 47 pruebas aprobadas en 12 suites.
+  - `npm run typecheck`: 0 errores.
+  - `npm run lint`: 0 errores, 0 warnings.
+  - `npm run build`: Compilación exitosa en 43.3s.
+
+---
+
+## Hito 7 — Calidad, E2E, Documentación y Cierre
 - **Estado:** En progreso
 - **Objetivos:**
-  - Implementar integrador Boris pusher en `src/modules/magnetism/domain/MagnetismMath.ts` para resolver la ecuación de Lorentz $\vec{F} = q(\vec{E} + \vec{v} \times \vec{B})$ con conservación estricta de rapidez ($|\vec{v}| = \text{cte}$) cuando $\vec{E} = 0$.
-  - Fallback 2D sin WebGL en U4 (`MagnetismModule.tsx`).
-  - Laboratorio interactivo de magnetismo (`MagnetismLaboratoryView.tsx`) con:
-    - Conductor rectilíneo infinito con corriente $I$ y campo de Biot-Savart $B = \frac{\mu_0 I}{2\pi r}$.
-    - Aproximación de dipolo magnético $\vec{B}(\vec{r}) = \frac{\mu_0}{4\pi} \frac{3(\vec{m}\cdot\hat{r})\hat{r} - \vec{m}}{r^3}$.
-    - Sonda de medición de $\vec{B}$ (con aguja de brújula / magnetómetro en $\mu\text{T}$ o $\text{mT}$).
-    - Región de campo uniforme cruzado $\vec{E} \perp \vec{B}$ (selector de velocidades de Wien $v = E/B$).
-    - Lanzamiento de partículas cargadas con Boris pusher, radio de Larmor $r_L = \frac{mv_\perp}{|q|B}$ y frecuencia de ciclotrón $\omega_c = \frac{|q|B}{m}$.
+  - Configurar GitHub Actions CI workflow en `.github/workflows/ci.yml` para ejecutar automáticamente `lint`, `typecheck`, `test` y `build`.
+  - Pruebas E2E / integración completa de flujos de usuario (navegación desde el Hub a las 4 unidades, alternancia entre Simulador y Laboratorio, y verificación de los laboratorios interactivos).
+  - Actualización exhaustiva de la documentación del proyecto conforme a la consigna académica:
+    - `README.md`: instalación, comandos, stack, estado real verificado de U1 a U4 (sin falsedades).
+    - `docs/plan.md`: backlog completo con criterios de aceptación observables y dependencias.
+    - `docs/arquitectura.md`: diagramas de flujo de cálculo desde la entrada de usuario hasta el renderizado (Clean Architecture pragmática, separación de dominio, aplicación y presentación).
+    - `docs/modelo-fisico.md`: ecuaciones, constantes, unidades SI, simplificaciones e hipótesis por cada una de las 4 unidades.
+    - `docs/validacion.md`: matriz de verificación de casos analíticos con valores teóricos vs obtenidos, tolerancias y comandos reales ejecutados.
+    - `docs/manual-usuario.md`: guía paso a paso de uso del Hub y los laboratorios interactivos (U1 a U4), controles, atajos de teclado y solución de problemas.
+    - `docs/guia-video.md`: guion y secuencia didáctica detallada para la grabación del video demostrativo de 5 a 10 minutos.
+    - `docs/diseno-ui.md`: tokens de diseño, principios visuales de "cuaderno experimental contemporáneo", paleta, accesibilidad y decisiones UX.
 
 
 

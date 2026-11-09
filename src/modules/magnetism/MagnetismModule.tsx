@@ -3,7 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Magnetism3DView } from './presentation/Magnetism3DView'
 import { Vector3 } from '../../shared/domain/Vector3'
 import { isWebGLAvailable } from '../../shared/ui/isWebGLAvailable'
-import { LabPlaceholderView } from '../../shared/ui/LabShell/LabPlaceholderView'
+import { MagnetismLaboratoryView } from './presentation/MagnetismLaboratoryView'
+import { Magnetism2DView } from './presentation/Magnetism2DView'
 
 export default function MagnetismModule() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -25,6 +26,10 @@ export default function MagnetismModule() {
   const webGLAvailable = React.useMemo(() => isWebGLAvailable(), [])
   const [webGLLost, setWebGLLost] = useState(!webGLAvailable)
 
+  if (labMode === 'laboratory') {
+    return <MagnetismLaboratoryView onSwitchToSimulator={() => handleModeChange('simulator')} />
+  }
+
   return (
     <div className="electric-layout">
       <aside className="electric-sidebar">
@@ -36,7 +41,7 @@ export default function MagnetismModule() {
         <div className="sim-controls" style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem' }}>
           <button
             type="button"
-            className={labMode === 'simulator' ? '' : 'secondary'}
+            className=""
             onClick={() => handleModeChange('simulator')}
             style={{ flex: 1 }}
           >
@@ -44,7 +49,7 @@ export default function MagnetismModule() {
           </button>
           <button
             type="button"
-            className={labMode === 'laboratory' ? '' : 'secondary'}
+            className="secondary"
             onClick={() => handleModeChange('laboratory')}
             style={{ flex: 1 }}
           >
@@ -111,48 +116,35 @@ export default function MagnetismModule() {
       </aside>
 
       <main className="electric-canvas-area">
-        {labMode === 'laboratory' ? (
-          <LabPlaceholderView
-            unitId="U4"
-            unitName="Fuerza y Campo Magnético"
-            targetMilestone="Hito 6 — Laboratorio Electromagnético"
-            onSwitchToSimulator={() => handleModeChange('simulator')}
-            expectedFeatures={[
-              'Colocación libre de conductor rectilíneo largo y dipolo magnético con vector momento m',
-              'Sonda tridimensional de vector campo B (Teslas) e inclinación magnética',
-              'Región de campos cruzados E y B uniformes con generador de partículas cargadas',
-              'Integrador Boris Pusher con conservación estricta de energía cinética cuando E = 0',
-              'Fallback 2D SVG para equipos sin aceleración WebGL'
-            ]}
-            physicalLaws={[
-              'Ley de Biot-Savart para hilo largo: B = μ₀·I / (2π·r)',
-              'Aproximación de dipolo magnético',
-              'Fuerza de Lorentz: F = q·(E + v × B)',
-              'Boris Pusher para conservación de rapidez'
-            ]}
-          />
-        ) : (
-          <div className="canvas-container">
-             {webGLLost ? (
-                 <div className="error-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                   <h3>El contexto WebGL se ha perdido.</h3>
-                   <p>Por favor, recarga la página o intenta de nuevo.</p>
-                   <button onClick={() => setWebGLLost(false)}>Reintentar</button>
-                 </div>
-             ) : (
-                 <Magnetism3DView 
-                   mode={mode} 
-                   I={I} 
-                   showLorentz={showLorentz}
-                   q={q}
-                   v0={new Vector3(0, 0, vz)}
-                   EExt={new Vector3(0, Ey, 0)}
-                   BExt={new Vector3(0, 0, 0)}
-                   onContextLost={() => setWebGLLost(true)}
-                 />
-             )}
-          </div>
-        )}
+        <div className="canvas-container">
+          {webGLLost || !webGLAvailable ? (
+            <Magnetism2DView
+              sourceType={mode}
+              current={I}
+              bExt={new Vector3(0, 0, 0)}
+              eExt={new Vector3(0, Ey, 0)}
+              particle={showLorentz ? {
+                position: new Vector3(2, 0, 0),
+                velocity: new Vector3(0, 0, vz),
+                q,
+                m: 1.0
+              } : null}
+              trajectory={[new Vector3(2, 0, 0)]}
+              probePos={new Vector3(1.5, 0, 0)}
+            />
+          ) : (
+            <Magnetism3DView 
+              mode={mode} 
+              I={I} 
+              showLorentz={showLorentz}
+              q={q}
+              v0={new Vector3(0, 0, vz)}
+              EExt={new Vector3(0, Ey, 0)}
+              BExt={new Vector3(0, 0, 0)}
+              onContextLost={() => setWebGLLost(true)}
+            />
+          )}
+        </div>
       </main>
     </div>
   )
