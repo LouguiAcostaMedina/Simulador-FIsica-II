@@ -1,104 +1,429 @@
-.hub-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
+/* Hub.css — Diseño Científico Contemporáneo del Dashboard */
+
+.hub-page {
   min-height: 100vh;
-}
-
-.hub-header {
-  text-align: center;
-}
-
-.hub-header h1 {
-  font-size: 3rem;
-  color: var(--color-accent-turquoise);
-  margin-bottom: 0.5rem;
-}
-
-.hub-header p {
-  font-size: 1.25rem;
+  background-color: var(--color-bg-ink);
   color: var(--color-text-ivory);
-  opacity: 0.8;
-}
-
-.hub-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.module-card {
-  background: var(--color-bg-surface);
-  border: 1px solid rgba(244, 240, 232, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
+  font-family: var(--font-sans);
+  padding: 2.5rem 1.5rem 3rem;
+  max-width: 1300px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  gap: 3.5rem;
 }
 
-a.module-card {
+/* 1. Hero Section */
+.hub-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
+  padding: 1.5rem 0 1rem;
+}
+
+.hub-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  background: rgba(66, 215, 200, 0.1);
+  border: 1px solid rgba(66, 215, 200, 0.3);
+  border-radius: var(--radius-full);
+  color: var(--color-accent-turquoise);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hero-badge-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-accent-turquoise);
+  box-shadow: var(--shadow-glow-turquoise);
+  animation: pulse-dot 2s infinite;
+}
+
+.hub-hero-title {
+  margin: 0;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-ivory);
+  background: linear-gradient(135deg, #F4F0E8 0%, #42D7C8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hub-hero-description {
+  margin: 0;
+  max-width: 780px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.hub-system-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.hub-sys-tag {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* 2. Sección de Unidades */
+.hub-units-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hub-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hub-section-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: var(--color-text-ivory);
+}
+
+.hub-section-header p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.hub-units-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .hub-units-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.hub-unit-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+  position: relative;
+}
+
+.hub-unit-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-lg);
+}
+
+.hub-unit-card.card-highlight {
+  border-color: rgba(66, 215, 200, 0.4);
+  box-shadow: 0 4px 20px rgba(66, 215, 200, 0.1);
+}
+
+.hub-unit-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.hub-unit-tag-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hub-unit-id {
+  background: var(--color-accent-turquoise);
+  color: var(--color-bg-ink);
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-xs);
+}
+
+.hub-unit-status-pill {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.hub-unit-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.unit-card-illustration {
+  width: 100%;
+  height: 100%;
+}
+
+.hub-unit-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.hub-unit-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--color-text-ivory);
+}
+
+.hub-unit-subtitle {
+  font-size: 0.8rem;
+  color: var(--color-accent-copper);
+  font-weight: 500;
+}
+
+.hub-unit-desc {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.hub-unit-formula {
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.65rem;
+  margin: 0.25rem 0;
+  overflow-x: auto;
+}
+
+.hub-unit-formula code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-accent-lilac);
+  white-space: nowrap;
+}
+
+.hub-unit-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.hub-topic-chip {
+  font-size: 0.7rem;
+  background: rgba(244, 240, 232, 0.05);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-xs);
+}
+
+/* Acciones Duales */
+.hub-unit-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.hub-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
   cursor: pointer;
 }
 
-a.module-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--color-accent-turquoise);
+.hub-action-btn:hover {
   text-decoration: none;
+  transform: translateY(-1px);
 }
 
-.module-card.disabled {
-  opacity: 0.7;
-}
-
-.module-card h2 {
-  font-size: 1.5rem;
-  margin: 0;
-  color: var(--color-text-ivory);
-}
-
-.module-card p {
-  margin: 0;
-  line-height: 1.5;
-  color: var(--color-text-ivory);
-  opacity: 0.7;
-  flex-grow: 1;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  align-self: flex-start;
-}
-
-.status-badge.available {
-  background: rgba(66, 215, 200, 0.1);
+.btn-simulator {
+  background: rgba(66, 215, 200, 0.12);
   color: var(--color-accent-turquoise);
+  border: 1px solid rgba(66, 215, 200, 0.35);
 }
 
-.status-badge.upcoming {
-  background: rgba(182, 155, 232, 0.1);
-  color: var(--color-accent-lilac);
+.btn-simulator:hover {
+  background: var(--color-accent-turquoise);
+  color: var(--color-bg-ink);
 }
 
-.preview-link {
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: var(--color-accent-lilac);
+.btn-laboratory {
+  background: rgba(245, 166, 106, 0.12);
+  color: var(--color-accent-copper);
+  border: 1px solid rgba(245, 166, 106, 0.35);
 }
 
+.btn-laboratory:hover {
+  background: var(--color-accent-copper);
+  color: var(--color-bg-ink);
+}
+
+/* 3. Recorridos de Aprendizaje */
+.hub-pathways-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hub-pathways-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.hub-pathway-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pathway-icon {
+  font-size: 1.6rem;
+}
+
+.hub-pathway-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-ivory);
+}
+
+.hub-pathway-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* 4. Guía de Convenciones */
+.hub-conventions-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-conventions-box {
+  background: var(--color-bg-surface-elevated);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.hub-conventions-box h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-ivory);
+}
+
+.hub-conventions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.convention-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.color-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.convention-item strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-ivory);
+  margin-bottom: 0.2rem;
+}
+
+.convention-item p {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+/* 5. Footer */
 .hub-footer {
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 1.5rem;
   text-align: center;
-  margin-top: auto;
-  opacity: 0.6;
+}
+
+.hub-footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer-author {
+  margin: 0;
   font-size: 0.9rem;
+  color: var(--color-text-ivory);
+}
+
+.footer-notes {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
 }

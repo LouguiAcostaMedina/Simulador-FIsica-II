@@ -1,0 +1,103 @@
+.lab-placeholder-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: 2rem;
+  background: radial-gradient(circle at center, rgba(36, 53, 63, 0.4) 0%, rgba(17, 26, 32, 0.95) 100%);
+}
+
+.lab-placeholder-card {
+  max-width: 620px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.5rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lab-placeholder-badge {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  background: rgba(245, 166, 106, 0.15);
+  color: var(--color-accent-copper);
+  border: 1px solid rgba(245, 166, 106, 0.3);
+}
+
+.lab-placeholder-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-ivory);
+}
+
+.lab-placeholder-desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.lab-placeholder-section h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  color: var(--color-accent-turquoise);
+}
+
+.lab-placeholder-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-ivory);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.lab-placeholder-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lab-placeholder-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--color-bg-ink);
+  color: var(--color-accent-lilac);
+  border: 1px solid var(--color-border-subtle);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-xs);
+}
+
+.lab-placeholder-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
+.lab-placeholder-switch-btn {
+  background: var(--color-accent-turquoise);
+  color: var(--color-bg-ink);
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.lab-placeholder-switch-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+

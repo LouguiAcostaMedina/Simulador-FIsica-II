@@ -1,0 +1,123 @@
+.sci-chart-wrapper {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sci-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.sci-chart-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--color-text-ivory);
+}
+
+.sci-chart-subtitle {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.sci-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sci-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: 1px solid var(--color-border-subtle);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sci-chart-legend-item:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-ivory);
+}
+
+.sci-chart-legend-item.hidden {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.sci-chart-legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sci-chart-canvas-container {
+  position: relative;
+  width: 100%;
+}
+
+.sci-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+  cursor: crosshair;
+}
+
+.sci-chart-tick-text {
+  font-size: 10px;
+  fill: var(--color-text-subtle);
+  font-family: var(--font-mono);
+}
+
+.sci-chart-axis-label {
+  font-size: 11px;
+  fill: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-weight: 500;
+}
+
+.sci-chart-tooltip {
+  position: absolute;
+  transform: translateX(-50%);
+  background: var(--color-bg-surface-elevated);
+  border: 1px solid var(--color-border-medium);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.65rem;
+  pointer-events: none;
+  z-index: 10;
+  font-size: 0.75rem;
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.sci-chart-tooltip-header {
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
+  color: var(--color-text-ivory);
+}
+
+.sci-chart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+}
+

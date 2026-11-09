@@ -1,13 +1,23 @@
 import React, { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useElectricSimulation } from './useElectricSimulation'
 import { Vector3 } from '../../../shared/domain/Vector3'
 import { Electric2DView } from './Electric2DView'
 import { Electric3DView } from './Electric3DView'
 import { FieldMath } from '../domain/FieldMath'
 import { isWebGLAvailable } from '../../../shared/ui/isWebGLAvailable'
+import { LabPlaceholderView } from '../../../shared/ui/LabShell/LabPlaceholderView'
 
 export default function ElectricModule() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialMode = (searchParams.get('mode') as 'simulator' | 'laboratory') || 'simulator'
+  const [labMode, setLabMode] = useState<'simulator' | 'laboratory'>(initialMode)
+
+  const handleModeChange = (mode: 'simulator' | 'laboratory') => {
+    setLabMode(mode)
+    setSearchParams({ mode })
+  }
+
   const sim = useElectricSimulation()
   const webGLAvailable = useMemo(() => isWebGLAvailable(), [])
   const [viewMode, setViewMode] = useState<'2D' | '3D'>(webGLAvailable ? '3D' : '2D')
@@ -42,6 +52,25 @@ export default function ElectricModule() {
         <div className="sidebar-header">
           <Link to="/" className="back-link">← Hub</Link>
           <h2>Campo y Potencial</h2>
+        </div>
+
+        <div className="sim-controls" style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem' }}>
+          <button
+            type="button"
+            className={labMode === 'simulator' ? '' : 'secondary'}
+            onClick={() => handleModeChange('simulator')}
+            style={{ flex: 1 }}
+          >
+            ⚡ Simulador
+          </button>
+          <button
+            type="button"
+            className={labMode === 'laboratory' ? '' : 'secondary'}
+            onClick={() => handleModeChange('laboratory')}
+            style={{ flex: 1 }}
+          >
+            🔬 Laboratorio
+          </button>
         </div>
 
         <section className="control-group">
@@ -114,44 +143,68 @@ export default function ElectricModule() {
       </aside>
 
       <main className="electric-canvas-area">
-        <div className="canvas-toolbar">
-          <button onClick={() => setViewMode('2D')} className={viewMode === '2D' ? 'active' : ''}>Vista 2D</button>
-          <button 
-             onClick={() => {
-               if (!webGLAvailable) {
-                 sim.setErrorMsg("WebGL no está disponible en este dispositivo. Usando vista 2D.");
-                 return;
-               }
-               setViewMode('3D')
-             }} 
-             className={viewMode === '3D' ? 'active' : ''}>Vista 3D</button>
-          <div className="scale-control">
-            <label>Escala (px/m): <input type="range" min="10" max="200" value={scale} onChange={e => setScale(Number(e.target.value))} /></label>
-            <span>{scale}</span>
-          </div>
-        </div>
-        <div className="canvas-container">
-           {viewMode === '2D' ? (
-             <Electric2DView 
-                charges={sim.charges} 
-                testParticle={sim.testParticle} 
-                trajectory={sim.trajectory} 
-                scale={scale}
-                onChargeMove={sim.updateCharge}
-                onInspect={setInspectedPos}
-              />
-           ) : (
-             <Electric3DView 
-                 charges={sim.charges} 
-                 testParticle={sim.testParticle} 
-                 trajectory={sim.trajectory}
-                 onContextLost={() => {
-                   sim.setErrorMsg("El contexto WebGL falló. Cambiando a vista 2D por seguridad.");
-                   setViewMode('2D');
-                 }}
-              />
-           )}
-        </div>
+        {labMode === 'laboratory' ? (
+          <LabPlaceholderView
+            unitId="U1"
+            unitName="Campo y Potencial Eléctrico"
+            targetMilestone="Hito 4 — Laboratorio Electrostático"
+            onSwitchToSimulator={() => handleModeChange('simulator')}
+            expectedFeatures={[
+              'Mesa de cargas 2D/3D con arrastre libre de cargas puntuales positivas y negativas',
+              'Sondas interactivas de vector campo eléctrico E (N/C) y potencial escalar V (V)',
+              'Isolíneas equipotenciales continuas generadas mediante algoritmo Marching Squares',
+              'Lanzamiento de carga de prueba con control de posición inicial, masa m, carga q y v₀',
+              'Snapshot reproducible de condiciones iniciales para reinicio estricto'
+            ]}
+            physicalLaws={[
+              'Ley de Coulomb: F = k·(q₁·q₂)/r²',
+              'Principio de Superposición lineal',
+              'Potencial V(r) = k·Σ(qᵢ/rᵢ)',
+              'Marching Squares para equipotenciales exactas'
+            ]}
+          />
+        ) : (
+          <>
+            <div className="canvas-toolbar">
+              <button onClick={() => setViewMode('2D')} className={viewMode === '2D' ? 'active' : ''}>Vista 2D</button>
+              <button 
+                  onClick={() => {
+                    if (!webGLAvailable) {
+                      sim.setErrorMsg("WebGL no está disponible en este dispositivo. Usando vista 2D.");
+                      return;
+                    }
+                    setViewMode('3D')
+                  }} 
+                  className={viewMode === '3D' ? 'active' : ''}>Vista 3D</button>
+              <div className="scale-control">
+                <label>Escala (px/m): <input type="range" min="10" max="200" value={scale} onChange={e => setScale(Number(e.target.value))} /></label>
+                <span>{scale}</span>
+              </div>
+            </div>
+            <div className="canvas-container">
+                {viewMode === '2D' ? (
+                  <Electric2DView 
+                    charges={sim.charges} 
+                    testParticle={sim.testParticle} 
+                    trajectory={sim.trajectory} 
+                    scale={scale}
+                    onChargeMove={sim.updateCharge}
+                    onInspect={setInspectedPos}
+                  />
+                ) : (
+                  <Electric3DView 
+                      charges={sim.charges} 
+                      testParticle={sim.testParticle} 
+                      trajectory={sim.trajectory}
+                      onContextLost={() => {
+                        sim.setErrorMsg("El contexto WebGL falló. Cambiando a vista 2D por seguridad.");
+                        setViewMode('2D');
+                      }}
+                  />
+                )}
+            </div>
+          </>
+        )}
       </main>
     </div>
   )

@@ -1,0 +1,226 @@
+.inspector-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-bg-surface);
+  border-left: 1px solid var(--color-border-subtle);
+  color: var(--color-text-ivory);
+  font-family: var(--font-sans);
+  overflow-y: auto;
+}
+
+.inspector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface-elevated);
+}
+
+.inspector-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.inspector-title {
+  margin: 0;
+  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--color-text-ivory);
+}
+
+.inspector-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-primary {
+  background: rgba(66, 215, 200, 0.15);
+  color: var(--color-accent-turquoise);
+  border: 1px solid rgba(66, 215, 200, 0.3);
+}
+
+.badge-copper {
+  background: rgba(245, 166, 106, 0.15);
+  color: var(--color-accent-copper);
+  border: 1px solid rgba(245, 166, 106, 0.3);
+}
+
+.badge-lilac {
+  background: rgba(182, 155, 232, 0.15);
+  color: var(--color-accent-lilac);
+  border: 1px solid rgba(182, 155, 232, 0.3);
+}
+
+.badge-warning {
+  background: rgba(236, 201, 75, 0.15);
+  color: var(--color-warning);
+  border: 1px solid rgba(236, 201, 75, 0.3);
+}
+
+.inspector-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.inspector-close-btn:hover {
+  color: var(--color-text-ivory);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.inspector-content {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+.inspector-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+  gap: 0.75rem;
+}
+
+.inspector-empty-icon {
+  font-size: 2.2rem;
+  opacity: 0.6;
+}
+
+.inspector-empty-text {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.inspector-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.inspector-field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inspector-field-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-ivory);
+}
+
+.inspector-field-unit {
+  color: var(--color-text-muted);
+  margin-left: 0.35rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.inspector-field-helper {
+  font-size: 0.8rem;
+  color: var(--color-accent-turquoise);
+  cursor: help;
+}
+
+.inspector-field-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.inspector-number-input {
+  width: 90px;
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-ivory);
+  padding: 0.45rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  transition: border-color var(--transition-fast);
+}
+
+.inspector-number-input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px rgba(66, 215, 200, 0.2);
+}
+
+.inspector-slider-input {
+  flex: 1;
+  accent-color: var(--color-accent-turquoise);
+  cursor: pointer;
+}
+
+.inspector-field.has-error .inspector-number-input {
+  border-color: var(--color-error);
+}
+
+.inspector-field-error {
+  font-size: 0.75rem;
+  color: var(--color-error);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+}
+
+.inspector-metric {
+  background: var(--color-bg-ink);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inspector-metric-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.inspector-metric-value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.inspector-metric-unit {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.inspector-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+

@@ -1,13 +1,23 @@
 import React, { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useCapacitorSimulation } from './useCapacitorSimulation'
 import { Capacitor3DView } from './Capacitor3DView'
 import { SimpleLineChart } from '../../../shared/ui/SimpleLineChart'
 import { CapacitorMath } from '../domain/CapacitorMath'
 import { isWebGLAvailable } from '../../../shared/ui/isWebGLAvailable'
+import { LabPlaceholderView } from '../../../shared/ui/LabShell/LabPlaceholderView'
 import './CapacitorsModule.css'
 
 export default function CapacitorsModule() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialMode = (searchParams.get('mode') as 'simulator' | 'laboratory') || 'simulator'
+  const [labMode, setLabMode] = useState<'simulator' | 'laboratory'>(initialMode)
+
+  const handleModeChange = (mode: 'simulator' | 'laboratory') => {
+    setLabMode(mode)
+    setSearchParams({ mode })
+  }
+
   const { state, metrics, originalMetrics, setParam, setBaseLine, clearBaseLine } = useCapacitorSimulation()
   const webGLAvailable = useMemo(() => isWebGLAvailable(), [])
   const [webGLLost, setWebGLLost] = useState(!webGLAvailable)
@@ -20,6 +30,25 @@ export default function CapacitorsModule() {
         <div className="sidebar-header">
           <Link to="/" className="back-link">← Hub</Link>
           <h2>Capacitores y Dieléctricos</h2>
+        </div>
+
+        <div className="sim-controls" style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem' }}>
+          <button
+            type="button"
+            className={labMode === 'simulator' ? '' : 'secondary'}
+            onClick={() => handleModeChange('simulator')}
+            style={{ flex: 1 }}
+          >
+            ⚡ Simulador
+          </button>
+          <button
+            type="button"
+            className={labMode === 'laboratory' ? '' : 'secondary'}
+            onClick={() => handleModeChange('laboratory')}
+            style={{ flex: 1 }}
+          >
+            🔬 Laboratorio
+          </button>
         </div>
 
         <section className="control-group">
@@ -123,17 +152,39 @@ export default function CapacitorsModule() {
       </aside>
       
       <main className="electric-canvas-area">
-         <div className="canvas-container">
-            {webGLLost ? (
-               <div className="error-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                 <h3>El contexto WebGL se ha perdido.</h3>
-                 <p>Por favor, recarga la página o intenta de nuevo.</p>
-                 <button onClick={() => setWebGLLost(false)}>Reintentar</button>
-               </div>
-            ) : (
-               isValid && <Capacitor3DView state={state} metrics={metrics!} onContextLost={() => setWebGLLost(true)} />
-            )}
-         </div>
+         {labMode === 'laboratory' ? (
+           <LabPlaceholderView
+             unitId="U2"
+             unitName="Capacitores y Dieléctricos"
+             targetMilestone="Hito 5 — Laboratorio de Capacitancia"
+             onSwitchToSimulator={() => handleModeChange('simulator')}
+             expectedFeatures={[
+               'Mesa de trabajo de placas paralelas con handles táctiles de área A y separación d',
+               'Inserción y extracción interactiva de lámina dieléctrica con fracción continua x/L',
+               'Conmutador interactivo de fuente: Batería conectada (V fijo) vs Desconectada (Q fijo)',
+               'Voltímetro virtual y medidor de energía electrostática acumulada U (J)',
+               'Comparador de escenarios antes/después con balance de energía real'
+             ]}
+             physicalLaws={[
+               'Capacitancia C = ε₀·εᵣ·A / d',
+               'Carga acumulada Q = C·V',
+               'Energía U = ½·C·V² = Q² / (2C)',
+               'Campo entre placas E = V / d (placas ideales)'
+             ]}
+           />
+         ) : (
+           <div className="canvas-container">
+              {webGLLost ? (
+                 <div className="error-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                   <h3>El contexto WebGL se ha perdido.</h3>
+                   <p>Por favor, recarga la página o intenta de nuevo.</p>
+                   <button onClick={() => setWebGLLost(false)}>Reintentar</button>
+                 </div>
+              ) : (
+                 isValid && <Capacitor3DView state={state} metrics={metrics!} onContextLost={() => setWebGLLost(true)} />
+              )}
+           </div>
+         )}
       </main>
     </div>
   )
