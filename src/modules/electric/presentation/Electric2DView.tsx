@@ -157,7 +157,7 @@ export function Electric2DView({ charges, testParticle, trajectory, scale, onCha
             0
           )
           
-          let forward = c.q > 0
+          const forward = c.q > 0
           
           ctx.beginPath()
           const startScreen = toScreen(currentPos)

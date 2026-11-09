@@ -11,7 +11,7 @@ function LorentzParticle({ mode, I, BExt, EExt, showLorentz, q, v0, particlePosR
     particlePosRef.current = new Vector3(2, 0, 0);
     velRef.current = v0;
     setTrajectory([new Vector3(2, 0, 0)]);
-  }, [mode, I, BExt, EExt, showLorentz, q, v0]);
+  }, [mode, I, BExt, EExt, showLorentz, q, v0, particlePosRef, setTrajectory]);
 
   useFrame((state, delta) => {
     if (!showLorentz) return;
@@ -21,11 +21,15 @@ function LorentzParticle({ mode, I, BExt, EExt, showLorentz, q, v0, particlePosR
     if (mode === 'wire') {
       try {
         BLocal = BLocal.add(MagnetismMath.evaluateWireBField(I, new Vector3(0,1,0), new Vector3(0,0,0), particlePosRef.current));
-      } catch (e) {}
+      } catch {
+        // Ignorar singularidad en el hilo
+      }
     } else if (mode === 'dipole') {
       try {
         BLocal = BLocal.add(MagnetismMath.evaluateDipoleBField(new Vector3(0, I * 0.1, 0), new Vector3(0,0,0), particlePosRef.current));
-      } catch (e) {}
+      } catch {
+        // Ignorar singularidad en el dipolo
+      }
     }
     
     const F = MagnetismMath.evaluateLorentzForce(q, EExt, velRef.current, BLocal);
@@ -95,7 +99,7 @@ export function Magnetism3DView({ mode, I, BExt, EExt, showLorentz, q, v0, onCon
     // Generamos varias líneas desde el hemisferio superior
     for (let theta = 0.2; theta <= Math.PI / 2 - 0.2; theta += 0.3) {
       for (let phi = 0; phi < Math.PI * 2; phi += Math.PI / 2) {
-         let r = 0.3; // starting radius
+         const r = 0.3; // starting radius
          let pos = new Vector3(
            r * Math.sin(theta) * Math.cos(phi),
            r * Math.cos(theta),
