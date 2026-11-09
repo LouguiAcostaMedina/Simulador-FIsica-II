@@ -5,7 +5,8 @@ import { Capacitor3DView } from './Capacitor3DView'
 import { SimpleLineChart } from '../../../shared/ui/SimpleLineChart'
 import { CapacitorMath } from '../domain/CapacitorMath'
 import { isWebGLAvailable } from '../../../shared/ui/isWebGLAvailable'
-import { LabPlaceholderView } from '../../../shared/ui/LabShell/LabPlaceholderView'
+import { CapacitorLaboratoryView } from './CapacitorLaboratoryView'
+import { Capacitor2DView } from './Capacitor2DView'
 import './CapacitorsModule.css'
 
 export default function CapacitorsModule() {
@@ -24,6 +25,10 @@ export default function CapacitorsModule() {
 
   const isValid = state.A > 0 && state.d > 0 && state.er >= 1
 
+  if (labMode === 'laboratory') {
+    return <CapacitorLaboratoryView onSwitchToSimulator={() => handleModeChange('simulator')} />
+  }
+
   return (
     <div className="electric-layout">
       <aside className="electric-sidebar">
@@ -35,7 +40,7 @@ export default function CapacitorsModule() {
         <div className="sim-controls" style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem' }}>
           <button
             type="button"
-            className={labMode === 'simulator' ? '' : 'secondary'}
+            className=""
             onClick={() => handleModeChange('simulator')}
             style={{ flex: 1 }}
           >
@@ -43,7 +48,7 @@ export default function CapacitorsModule() {
           </button>
           <button
             type="button"
-            className={labMode === 'laboratory' ? '' : 'secondary'}
+            className="secondary"
             onClick={() => handleModeChange('laboratory')}
             style={{ flex: 1 }}
           >
@@ -152,39 +157,13 @@ export default function CapacitorsModule() {
       </aside>
       
       <main className="electric-canvas-area">
-         {labMode === 'laboratory' ? (
-           <LabPlaceholderView
-             unitId="U2"
-             unitName="Capacitores y Dieléctricos"
-             targetMilestone="Hito 5 — Laboratorio de Capacitancia"
-             onSwitchToSimulator={() => handleModeChange('simulator')}
-             expectedFeatures={[
-               'Mesa de trabajo de placas paralelas con handles táctiles de área A y separación d',
-               'Inserción y extracción interactiva de lámina dieléctrica con fracción continua x/L',
-               'Conmutador interactivo de fuente: Batería conectada (V fijo) vs Desconectada (Q fijo)',
-               'Voltímetro virtual y medidor de energía electrostática acumulada U (J)',
-               'Comparador de escenarios antes/después con balance de energía real'
-             ]}
-             physicalLaws={[
-               'Capacitancia C = ε₀·εᵣ·A / d',
-               'Carga acumulada Q = C·V',
-               'Energía U = ½·C·V² = Q² / (2C)',
-               'Campo entre placas E = V / d (placas ideales)'
-             ]}
-           />
-         ) : (
-           <div className="canvas-container">
-              {webGLLost ? (
-                 <div className="error-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                   <h3>El contexto WebGL se ha perdido.</h3>
-                   <p>Por favor, recarga la página o intenta de nuevo.</p>
-                   <button onClick={() => setWebGLLost(false)}>Reintentar</button>
-                 </div>
-              ) : (
-                 isValid && <Capacitor3DView state={state} metrics={metrics!} onContextLost={() => setWebGLLost(true)} />
-              )}
-           </div>
-         )}
+        <div className="canvas-container">
+          {webGLLost || !webGLAvailable ? (
+            <Capacitor2DView state={state} metrics={metrics!} onParamChange={setParam} interactive={true} />
+          ) : (
+            isValid && <Capacitor3DView state={state} metrics={metrics!} onContextLost={() => setWebGLLost(true)} />
+          )}
+        </div>
       </main>
     </div>
   )

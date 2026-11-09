@@ -1,0 +1,258 @@
+/* CapacitorLaboratoryView.css — Estilos para el Laboratorio de Capacitores U2 */
+
+.cap-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  background: #0f161b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cap-3d-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Header Actions */
+.cap-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cap-mode-pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-ivory, #f4f0e8);
+  transition: all 0.15s ease;
+}
+
+.cap-mode-pill.active {
+  background: var(--color-field-turquoise, #42d7c8);
+  color: #111a20;
+  border-color: var(--color-field-turquoise, #42d7c8);
+}
+
+.cap-action-btn {
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-ivory, #f4f0e8);
+  transition: all 0.15s ease;
+}
+
+.cap-action-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Library */
+.cap-library {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.cap-lib-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cap-lib-heading {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted, #94a3b8);
+  margin: 0;
+  font-weight: 600;
+}
+
+.cap-materials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cap-mat-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--color-text-ivory, #f4f0e8);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cap-mat-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-field-turquoise, #42d7c8);
+}
+
+.cap-mat-btn.active {
+  background: rgba(66, 215, 200, 0.15);
+  border-color: var(--color-field-turquoise, #42d7c8);
+  color: #42d7c8;
+  font-weight: 600;
+}
+
+.cap-mat-er {
+  font-family: monospace;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.cap-preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cap-preset-btn {
+  text-align: left;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--color-text-ivory, #f4f0e8);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cap-preset-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-field-turquoise, #42d7c8);
+}
+
+.cap-chart-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cap-chart-tab {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.75rem;
+  text-align: left;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--color-text-muted, #94a3b8);
+  cursor: pointer;
+}
+
+.cap-chart-tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-field-turquoise, #42d7c8);
+  color: var(--color-text-ivory, #f4f0e8);
+  font-weight: 600;
+}
+
+/* Inspector */
+.cap-inspector {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.cap-insp-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.cap-insp-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-ivory, #f4f0e8);
+}
+
+.cap-comparison-box {
+  padding: 0.65rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+
+.cap-energy-note {
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  background: rgba(245, 166, 106, 0.12);
+  border: 1px solid rgba(245, 166, 106, 0.3);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #f5a66a;
+}
+
+/* Bottom Panel */
+.cap-bottom-panel {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.cap-bottom-chart {
+  min-height: 190px;
+}
+
+.cap-bottom-formulas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cap-formula-card {
+  padding: 0.65rem 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cap-formula-card h5 {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-field-turquoise, #42d7c8);
+  font-weight: 600;
+}
+
+.cap-formula-card code {
+  font-family: monospace;
+  font-size: 0.88rem;
+  color: var(--color-text-ivory, #f4f0e8);
+}
+
+.cap-formula-card span {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #94a3b8);
+  line-height: 1.3;
+}
+
+@media (max-width: 900px) {
+  .cap-bottom-panel {
+    grid-template-columns: 1fr;
+  }
+}

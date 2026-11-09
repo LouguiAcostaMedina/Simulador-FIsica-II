@@ -123,13 +123,45 @@
 ---
 
 ## Hito 5 — U2: Simulador y Laboratorio de Capacitores
+- **Estado:** COMPLETADO (APROBADO)
+- **Implementado:**
+  - Modelo físico de inserción parcial de dieléctrico en `src/modules/capacitors/domain/CapacitorMath.ts`:
+    - Modelo riguroso de capacitores equivalentes en paralelo por fracción de área: $C_{eq} = \frac{\varepsilon_0 A}{d} [1 + (\varepsilon_r - 1) f]$.
+    - Cálculo de fuerza electrostática sobre la lámina $F_{slab} = \frac{1}{2} (\varepsilon_r - 1) \varepsilon_0 W \frac{V^2}{d}$.
+    - Biblioteca de materiales dieléctricos estándar (`STANDARD_DIELECTRICS`: Vacío, Papel Parafinado, Vidrio Pyrex, Mica, Titanato de Bario).
+    - Validación de magnitudes estrictamente positivas ($A > 0, d > 0, \varepsilon_r \ge 1$).
+  - Vista interactiva 2D `Capacitor2DView.tsx` y `Capacitor2DView.css`:
+    - Esquema de placas con cargas reales $+Q$ y $-Q$, líneas de campo eléctrico $\vec{E}$, polarización interior $\vec{P}$ y conexiones a batería o interruptor abierto.
+    - Handles interactivos táctiles y de ratón en el lienzo para ajustar distancia $d$, área $A$ e inserción de dieléctrico.
+    - Utilizado como fallback funcional al 100% en `CapacitorsModule.tsx` cuando WebGL no está disponible o falla.
+  - Laboratorio completo `CapacitorLaboratoryView.tsx` y `CapacitorLaboratoryView.css`:
+    - Integración con `LabShell`, selector de modo, dimensiones 2D/3D conmutables.
+    - Presets experimentales: Vacío estándar, Dieléctrico con $V$ fijo (batería conectada), Dieléctrico con $Q$ fijo (batería aislada) y Gran separación de placas.
+    - Inspector contextual: ajuste de $A, d, \varepsilon_r$, porcentaje de inserción, voltaje o carga fijada; lectura de $C, Q, V, E, U, F_{slab}$.
+    - Comparador de escenario base con cálculo explícito del trabajo de la batería $W_{bat} = V \cdot \Delta Q = 2 \Delta U$ en modo $V$ fijo.
+    - Gráfica dinámica `ScientificChart` con selector de curvas: $C(d) \propto 1/d$, $U(V) \propto V^2$ y $C(f)$ lineal.
+  - Pruebas unitarias y de integración:
+    - `CapacitorMath.test.ts`: 6 pruebas analíticas (duplicar $A$, duplicar $d$, dieléctrico en $V$ fijo, dieléctrico en $Q$ fijo, inserción al 50% y rechazo de parámetros no físicos).
+    - `CapacitorLaboratoryView.test.tsx`: 4 pruebas de interacción en DOM (renderizado, alternancia $V$ fijo/$Q$ fijo, preset con $W_{bat}$ y selector de materiales).
+- **Verificación:**
+  - `npm test`: 41 pruebas aprobadas en 11 suites.
+  - `npm run typecheck`: 0 errores.
+  - `npm run lint`: 0 errores, 0 warnings.
+  - `npm run build`: Compilación exitosa en 44.1s.
+
+---
+
+## Hito 6 — U4: Simulador y Laboratorio de Magnetismo
 - **Estado:** En progreso
 - **Objetivos:**
-  - Fallback 2D sin WebGL en U2 (`CapacitorsModule.tsx`).
-  - Laboratorio interactivo de capacitores (`CapacitorLaboratoryView.tsx`) con handles/sliders para área de placas $A$, distancia de separación $d$, constante dieléctrica $\kappa = \varepsilon_r$ y modo de inserción parcial.
-  - Modo batería: conmutable entre $V$ constante (batería conectada) y $Q$ constante (batería desconectada).
-  - Inspector contextual de capacitor con cálculo exacto de $C, Q, V, E, U$ y balances de energía.
-  - Gráficas interactivas con `ScientificChart` para $C(d)$ y $U(V)$ o $U(Q)$.
+  - Implementar integrador Boris pusher en `src/modules/magnetism/domain/MagnetismMath.ts` para resolver la ecuación de Lorentz $\vec{F} = q(\vec{E} + \vec{v} \times \vec{B})$ con conservación estricta de rapidez ($|\vec{v}| = \text{cte}$) cuando $\vec{E} = 0$.
+  - Fallback 2D sin WebGL en U4 (`MagnetismModule.tsx`).
+  - Laboratorio interactivo de magnetismo (`MagnetismLaboratoryView.tsx`) con:
+    - Conductor rectilíneo infinito con corriente $I$ y campo de Biot-Savart $B = \frac{\mu_0 I}{2\pi r}$.
+    - Aproximación de dipolo magnético $\vec{B}(\vec{r}) = \frac{\mu_0}{4\pi} \frac{3(\vec{m}\cdot\hat{r})\hat{r} - \vec{m}}{r^3}$.
+    - Sonda de medición de $\vec{B}$ (con aguja de brújula / magnetómetro en $\mu\text{T}$ o $\text{mT}$).
+    - Región de campo uniforme cruzado $\vec{E} \perp \vec{B}$ (selector de velocidades de Wien $v = E/B$).
+    - Lanzamiento de partículas cargadas con Boris pusher, radio de Larmor $r_L = \frac{mv_\perp}{|q|B}$ y frecuencia de ciclotrón $\omega_c = \frac{|q|B}{m}$.
 
 
 

@@ -52,4 +52,24 @@ describe('CapacitorMath', () => {
     expect(mdq.U).toBeLessThan(mbq.U)
     expect(mdq.Q).toBeCloseTo(mbq.Q, 15)
   })
+
+  it('inserción parcial del dieléctrico al 50% modela dos capacitores en paralelo', () => {
+    const sVac: CapacitorState = { A: 0.01, d: 0.01, er: 4, mode: 'fixed_V', sourceValue: 10, insertionFraction: 0 }
+    const sFull: CapacitorState = { ...sVac, insertionFraction: 1 }
+    const sHalf: CapacitorState = { ...sVac, insertionFraction: 0.5 }
+
+    const mVac = CapacitorMath.evaluate(sVac)
+    const mFull = CapacitorMath.evaluate(sFull)
+    const mHalf = CapacitorMath.evaluate(sHalf)
+
+    // C(50%) = (C_vac + C_full) / 2
+    expect(mHalf.C).toBeCloseTo((mVac.C + mFull.C) / 2, 15)
+    expect(mHalf.slabForce).toBeGreaterThan(0)
+  })
+
+  it('rechaza entradas no físicas (A <= 0, d <= 0, er < 1)', () => {
+    expect(() => CapacitorMath.evaluate({ A: 0, d: 0.01, er: 1, mode: 'fixed_V', sourceValue: 10 })).toThrow()
+    expect(() => CapacitorMath.evaluate({ A: 0.01, d: -0.001, er: 1, mode: 'fixed_V', sourceValue: 10 })).toThrow()
+    expect(() => CapacitorMath.evaluate({ A: 0.01, d: 0.01, er: 0.5, mode: 'fixed_V', sourceValue: 10 })).toThrow()
+  })
 })
