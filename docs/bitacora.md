@@ -40,12 +40,44 @@
 ---
 
 ## Hito 2 — Laboratorio de Circuitos U3 (Máxima Prioridad)
-- **Estado:** En progreso
+- **Estado:** COMPLETADO (APROBADO)
+- **Implementado:**
+  - Modelo de circuito en TypeScript puro en `src/modules/current/domain/CircuitNetlist.ts`: `CircuitComponent`, `Terminal`, `Wire`, `CircuitNetlist`, `ComponentSimulationResult`, `SimulationResult`.
+  - Solucionador exacto DC por Análisis Nodal Modificado (MNA) en `src/modules/current/domain/DCSolver.ts`:
+    - Extracción topológica de nodos mediante Disjoint-Set / bosque de terminales conectados por cables.
+    - Detección rigurosa de cortocircuitos directos entre terminales de la fuente.
+    - Matriz MNA `[G | B; C | D][v; j] = [i; e]` con solución por Eliminación Gaussiana con pivoteo parcial.
+    - Soporte completo para fuentes DC ideales, resistores, bombillas con brillo proporcional a $P/P_{nom}$, interruptores abiertos/cerrados, amperímetros ideales (0 V), voltímetros y fusibles de disparo determinista.
+    - Conservación estricta de energía: balance de potencia suministrada vs disipada ($P_{in} = \sum P_{out}$) con tolerancia $< 10^{-5}$ W.
+  - Lienzo interactivo SVG `CircuitCanvas.tsx` y `CircuitCanvas.css`:
+    - Cuadrícula con `snap-to-grid` (20 px), zoom por rueda / botones (40% a 250%) y desplazamiento (pan).
+    - Arrastre de piezas, selección, rotación 90° con atajo de teclado 'R'.
+    - Cableado interactivo terminal a terminal con cursor de mira y banner de conexión.
+    - Visualización de flujo de corriente simbólico mediante trazos animados en ramas activas.
+    - Alternancia directa de interruptor con clic sobre la palanca.
+  - Entorno de laboratorio completo `CircuitLaboratoryView.tsx` y `CircuitLaboratoryView.css`:
+    - Integración con `LabShell`: barra superior, biblioteca lateral izquierda con 7 componentes y 5 presets didácticos.
+    - Inspector contextual lateral derecho: edición de voltajes, resistencias, interruptores, fusible y métricas instantáneas ($V, I, P$).
+    - Panel inferior de resultados con gráfica $I-V$ en tiempo real (`ScientificChart`), tabla de corrientes por elemento y comprobación analítica de potencia.
+    - Historial de estados con soporte para Deshacer (Ctrl+Z) y Rehacer (Ctrl+Y).
+    - Conexión condicional en `CurrentModule.tsx` cuando `labMode === 'laboratory'`.
+- **Verificación:**
+  - `DCSolver.test.ts`: 4 pruebas analíticas aprobadas (caso mixto de aceptación $12\text{ V}, 10\ \Omega + [20\ \Omega \parallel 20\ \Omega] \to R_{eq}=20\ \Omega, I=0.6\text{ A}, P=7.2\text{ W}$; recálculo al abrir interruptor en rama $R_2 \to R_{eq}=30\ \Omega, I=0.4\text{ A}, P=4.8\text{ W}$; cortocircuito; sin fuente).
+  - `CircuitLaboratoryView.test.tsx`: 3 pruebas completas de interacción en DOM con `@testing-library/react` aprobadas (renderizado del caso de aceptación, alternancia de presets con apertura de interruptor y vaciado/agregado desde biblioteca).
+  - `npm test`: 21 pruebas aprobadas en 7 archivos.
+  - `npm run typecheck`: 0 errores.
+  - `npm run lint`: 0 errores, 0 warnings.
+  - `npm run build`: Compilación exitosa de producción en 39.4s.
+
+---
+
+## Hito 3 — Renovación del Simulador U3 e Integración Didáctica
+- **Estado:** Pendiente
 - **Objetivos:**
-  - Modelado formal de circuito en TypeScript puro: `Component`, `Terminal`, `Wire`, `Netlist`, `SimulationResult`.
-  - Solucionador DC exacto por Análisis Nodal Modificado (MNA) con leyes de Kirchhoff (KCL/KVL), soporte de resistores, fuentes de voltaje ideales, interruptores abiertos/cerrados, bombillas resistivas e instrumentos virtuales (amperímetro/voltímetro).
-  - Detección precisa de singularidades y fallos topológicos: circuito abierto, nodos flotantes, cortocircuito de fuente con mensaje concreto.
-  - Canvas SVG interactivo para cableado libre con snap-to-grid, pan, zoom, arrastre de piezas, selección, rotación 90°, creación de cables terminal-a-terminal, borrado y presets (serie, paralelo, mixto, bombilla, switch).
-  - Validación del caso de aceptación: 12 V, 10 Ω en serie con (20 Ω || 20 Ω) -> Req = 20 Ω, I = 0.6 A, P = 7.2 W.
+  - Renovar la presentación del Simulador U3 (conservando el `CircuitSolver` de árbol y `RCView`).
+  - Integrar en la UI las magnitudes físicas de electrodinámica: $I=\Delta Q/\Delta t$, densidad de corriente $J=I/A$, velocidad de deriva $v_d=I/(n|q|A)$ y resistencia material $R=\rho L/A$.
+  - Explicar y contrastar en pantalla el sentido de corriente convencional frente a la deriva real de electrones.
+  - Reparar el signo físico de la corriente en la descarga del circuito RC ($\tau = RC$), manteniendo magnitudes positivas o convención explícita con pausa y reinicio.
+
 
 

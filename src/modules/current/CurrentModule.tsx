@@ -4,7 +4,7 @@ import { CircuitNode, CircuitSolver } from './domain/CircuitSolver'
 import { CircuitView } from './CircuitView'
 import { RCView } from './RCView'
 import { SimpleLineChart } from '../../shared/ui/SimpleLineChart'
-import { LabPlaceholderView } from '../../shared/ui/LabShell/LabPlaceholderView'
+import { CircuitLaboratoryView } from './presentation/CircuitLaboratoryView'
 
 export default function CurrentModule() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -81,6 +81,10 @@ export default function CurrentModule() {
     setRoot(traverseAndUpdate(root))
   }
 
+  if (labMode === 'laboratory') {
+    return <CircuitLaboratoryView onSwitchToSimulator={() => handleModeChange('simulator')} />
+  }
+
   return (
     <div className="electric-layout current-module">
       <aside className="electric-sidebar">
@@ -92,7 +96,7 @@ export default function CurrentModule() {
         <div className="sim-controls" style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem' }}>
           <button
             type="button"
-            className={labMode === 'simulator' ? '' : 'secondary'}
+            className=""
             onClick={() => handleModeChange('simulator')}
             style={{ flex: 1 }}
           >
@@ -100,7 +104,7 @@ export default function CurrentModule() {
           </button>
           <button
             type="button"
-            className={labMode === 'laboratory' ? '' : 'secondary'}
+            className="secondary"
             onClick={() => handleModeChange('laboratory')}
             style={{ flex: 1 }}
           >
@@ -170,49 +174,26 @@ export default function CurrentModule() {
       </aside>
 
       <main className="electric-canvas-area">
-        {labMode === 'laboratory' ? (
-          <LabPlaceholderView
-            unitId="U3"
-            unitName="Corriente, Ley de Ohm y Circuitos"
-            targetMilestone="Hito 2 — Laboratorio de Circuitos (En Construcción Inmediata)"
-            onSwitchToSimulator={() => handleModeChange('simulator')}
-            expectedFeatures={[
-              'Lienzo interactivo SVG con snap-to-grid, zoom y desplazamiento (pan)',
-              'Biblioteca de arrastre: Batería DC, Resistores, Bombilla, Interruptor, Cables, Voltímetro y Amperímetro',
-              'Conexión explícita entre terminales: mallas libres en serie, paralelo y mixto',
-              'Inspector lateral contextual para editar valores de R, V, potencia máxima y estado del switch',
-              'Motor de simulación DC exacto basado en Análisis Nodal Modificado (MNA)',
-              'Detección de ramas abiertas, nodos flotantes y cortocircuitos con feedback físico'
-            ]}
-            physicalLaws={[
-              'Leyes de Kirchhoff: KCL en nodos y KVL en mallas',
-              'Análisis Nodal Modificado: [G][V] = [I]',
-              'Ley de Ohm: V = I · R',
-              'Efecto Joule y balance de potencia: P = V · I'
-            ]}
-          />
-        ) : (
-          <div className="canvas-container circuit-container">
-             {activeTab === 'ohm' ? (
-               error ? (
-                  <div className="error-panel" style={{ margin: '2rem' }}>
-                    <h3>Error Físico en el Circuito</h3>
-                    <p>{error}</p>
-                  </div>
-               ) : (
-                  solvedTree && <CircuitView 
-                    node={solvedTree} 
-                    onAdd={addNode} 
-                    onRemove={removeNode} 
-                    onUpdate={updateResistor} 
-                    isRoot={true} 
-                  />
-               )
+        <div className="canvas-container circuit-container">
+           {activeTab === 'ohm' ? (
+             error ? (
+                <div className="error-panel" style={{ margin: '2rem' }}>
+                  <h3>Error Físico en el Circuito</h3>
+                  <p>{error}</p>
+                </div>
              ) : (
-               <RCView />
-             )}
-          </div>
-        )}
+                solvedTree && <CircuitView 
+                  node={solvedTree} 
+                  onAdd={addNode} 
+                  onRemove={removeNode} 
+                  onUpdate={updateResistor} 
+                  isRoot={true} 
+                />
+             )
+           ) : (
+             <RCView />
+           )}
+        </div>
       </main>
     </div>
   )
