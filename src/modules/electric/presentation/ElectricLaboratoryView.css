@@ -1,0 +1,347 @@
+/* ElectricLaboratoryView.css — Laboratorio interactivo de Electrostática U1 */
+
+.electric-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 550px;
+  background: #0f161b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.electric-canvas-2d {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: crosshair;
+}
+
+.electric-canvas-hint {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(28, 41, 48, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #94a3b8);
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+/* Header Actions */
+.electric-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.electric-action-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.electric-action-btn.primary {
+  background: var(--color-field-turquoise, #42d7c8);
+  color: #111a20;
+}
+
+.electric-action-btn.primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.electric-action-btn.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-ivory, #f4f0e8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.electric-action-btn.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.electric-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Library Panel */
+.electric-library {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.electric-lib-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.electric-lib-heading {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted, #94a3b8);
+  margin: 0;
+  font-weight: 600;
+}
+
+.electric-charge-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.electric-add-btn {
+  padding: 0.5rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.electric-add-btn.pos {
+  background: rgba(242, 124, 119, 0.15);
+  color: #f27c77;
+  border-color: rgba(242, 124, 119, 0.35);
+}
+
+.electric-add-btn.pos:hover:not(:disabled) {
+  background: rgba(242, 124, 119, 0.3);
+}
+
+.electric-add-btn.neg {
+  background: rgba(182, 155, 232, 0.15);
+  color: #b69be8;
+  border-color: rgba(182, 155, 232, 0.35);
+}
+
+.electric-add-btn.neg:hover:not(:disabled) {
+  background: rgba(182, 155, 232, 0.3);
+}
+
+.electric-cap-note {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #94a3b8);
+  text-align: right;
+}
+
+.electric-preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.electric-preset-btn {
+  text-align: left;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--color-text-ivory, #f4f0e8);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.electric-preset-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-field-turquoise, #42d7c8);
+}
+
+.electric-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.electric-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-ivory, #f4f0e8);
+  cursor: pointer;
+}
+
+.electric-toggle-label input[type='checkbox'] {
+  accent-color: var(--color-field-turquoise, #42d7c8);
+  cursor: pointer;
+}
+
+.electric-zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.electric-scale-slider {
+  flex: 1;
+  accent-color: var(--color-field-turquoise, #42d7c8);
+}
+
+.electric-scale-val {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--color-text-muted, #94a3b8);
+  min-width: 50px;
+}
+
+/* Inspector */
+.electric-inspector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.electric-insp-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.electric-insp-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-ivory, #f4f0e8);
+}
+
+.electric-insp-coord {
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: var(--color-text-muted, #94a3b8);
+  margin: 0;
+}
+
+.electric-pos-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.electric-insp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.electric-insp-btn {
+  padding: 0.45rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.15s ease;
+}
+
+.electric-insp-btn.toggle-sign {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-ivory, #f4f0e8);
+}
+
+.electric-insp-btn.toggle-sign:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.electric-insp-btn.delete {
+  background: rgba(242, 124, 119, 0.15);
+  color: #f27c77;
+  border-color: rgba(242, 124, 119, 0.3);
+}
+
+.electric-insp-btn.delete:hover {
+  background: rgba(242, 124, 119, 0.3);
+}
+
+.electric-insp-btn.trace-btn {
+  background: rgba(182, 155, 232, 0.2);
+  color: #b69be8;
+  border-color: rgba(182, 155, 232, 0.4);
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+
+.electric-insp-btn.trace-btn:hover {
+  background: rgba(182, 155, 232, 0.35);
+}
+
+.electric-singularity-warning {
+  padding: 0.5rem;
+  background: rgba(242, 124, 119, 0.15);
+  border: 1px solid rgba(242, 124, 119, 0.35);
+  border-radius: 4px;
+  color: #f27c77;
+  font-size: 0.78rem;
+}
+
+.electric-particle-live-data {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.electric-particle-live-data h5 {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #94a3b8);
+}
+
+/* Bottom Panel */
+.electric-bottom-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.electric-formula-card {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.electric-formula-card h5 {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-field-turquoise, #42d7c8);
+  font-weight: 600;
+}
+
+.electric-formula-latex {
+  margin: 0;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--color-text-ivory, #f4f0e8);
+}
+
+.electric-formula-note {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #94a3b8);
+  line-height: 1.3;
+}

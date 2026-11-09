@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, MouseEvent } from 'react'
 import { Charge, TestParticle } from '../domain/Charge'
 import { FieldMath } from '../domain/FieldMath'
+import { MarchingSquares } from '../domain/MarchingSquares'
 import { Vector3 } from '../../../shared/domain/Vector3'
 
 interface Props {
@@ -83,31 +84,68 @@ export function Electric2DView({ charges, testParticle, trajectory, scale, onCha
     const toWorld = (x: number, y: number) => new Vector3((x - cx) / scale, -(y - cy) / scale, 0)
     const toScreen = (v: Vector3) => ({ x: cx + v.x * scale, y: cy - v.y * scale })
 
-    // 1. Dibujar mapa de potencial (Líneas equipotenciales)
-    // Utilizamos una rejilla gruesa y bandas de contorno para evitar caída de rendimiento
+    // 1. Dibujar mapa de potencial (Isolíneas equipotenciales continuas con Marching Squares)
     if (charges.length > 0) {
-      const eqStep = 4
-      const contourInterval = 2000 // Dibujar línea cada 2000V
-      const tolerance = 200 // Grosor de la línea en voltios
+      const cols = 55
+      const rows = 42
+      const xCoords: number[] = []
+      const yCoords: number[] = []
+      for (let c = 0; c < cols; c++) {
+        const sx = (c / (cols - 1)) * width
+        xCoords.push(toWorld(sx, 0).x)
+      }
+      for (let r = 0; r < rows; r++) {
+        const sy = (r / (rows - 1)) * height
+        yCoords.push(toWorld(0, sy).y)
+      }
 
-      ctx.fillStyle = 'rgba(182, 155, 232, 0.3)' // Lila suave para equipotenciales
-      for (let x = 0; x < width; x += eqStep) {
-        for (let y = 0; y < height; y += eqStep) {
-          const wPos = toWorld(x, y)
+      const grid: number[][] = []
+      for (let r = 0; r < rows; r++) {
+        const row: number[] = []
+        for (let c = 0; c < cols; c++) {
+          const wPos = new Vector3(xCoords[c], yCoords[r], 0)
           try {
-            const V = FieldMath.evaluatePotential(charges, wPos)
-            const Vabs = Math.abs(V)
-            // Si Vabs está cerca de un múltiplo de contourInterval
-            const remainder = Vabs % contourInterval
-            if (remainder < tolerance || contourInterval - remainder < tolerance) {
-              // Diferenciar color por signo
-              ctx.fillStyle = V > 0 ? 'rgba(242, 124, 119, 0.4)' : 'rgba(182, 155, 232, 0.4)'
-              ctx.fillRect(x, y, eqStep, eqStep)
+            let isSingular = false
+            for (const ch of charges) {
+              if (wPos.sub(ch.position).length() < 0.05) {
+                isSingular = true
+                break
+              }
             }
-          } catch (e) {
-            // singularidad
+            if (isSingular) {
+              row.push(NaN)
+            } else {
+              row.push(FieldMath.evaluatePotential(charges, wPos))
+            }
+          } catch {
+            row.push(NaN)
           }
         }
+        grid.push(row)
+      }
+
+      const standardIsoValues = [
+        -25000, -15000, -8000, -4000, -2000, -1000, -500, -200, 0,
+        200, 500, 1000, 2000, 4000, 8000, 15000, 25000
+      ]
+
+      const segments = MarchingSquares.generateContours(grid, xCoords, yCoords, standardIsoValues)
+
+      ctx.lineWidth = 1.2
+      for (const seg of segments) {
+        const s1 = toScreen(new Vector3(seg.x1, seg.y1, 0))
+        const s2 = toScreen(new Vector3(seg.x2, seg.y2, 0))
+
+        ctx.strokeStyle = seg.value > 0
+          ? 'rgba(242, 124, 119, 0.45)'
+          : seg.value < 0
+          ? 'rgba(182, 155, 232, 0.45)'
+          : 'rgba(244, 240, 232, 0.6)'
+
+        ctx.beginPath()
+        ctx.moveTo(s1.x, s1.y)
+        ctx.lineTo(s2.x, s2.y)
+        ctx.stroke()
       }
     }
 

@@ -97,11 +97,39 @@
 ---
 
 ## Hito 4 — U1: Simulador y Laboratorio de Electrostática
+- **Estado:** COMPLETADO (APROBADO)
+- **Implementado:**
+  - Snapshot exacto de condiciones iniciales en `src/modules/electric/application/ElectricSimulation.ts` y sincronización reactiva en `useElectricSimulation.ts` con soporte para ejecución paso a paso (`step()`).
+  - Algoritmo clásico de Marching Squares para contornos equipotenciales exactos en dominio puro en `src/modules/electric/domain/MarchingSquares.ts`.
+  - Integración de Marching Squares en el lienzo `Electric2DView.tsx` para generar isolíneas continuas y suaves que reemplazan el coloreado discreto anterior.
+  - Laboratorio completo de Electrostática en `src/modules/electric/presentation/ElectricLaboratoryView.tsx` y `ElectricLaboratoryView.css`:
+    - Mesa de trabajo interactiva 2D con rejilla métrica SI y coordenadas reales.
+    - Paleta de adición rápida de cargas ($+1\ \mu\text{C}, +5\ \mu\text{C}, -1\ \mu\text{C}, -5\ \mu\text{C}$) con arrastre libre y límite didáctico de 10 cargas.
+    - Presets experimentales: Carga única positiva/negativa, Dipolo simétrico, Cuadrupolo 2D y Placas paralelas simuladas con 6 cargas.
+    - Sondas de medición móviles: Sonda de campo $\vec{E}$ (muestra vector, magnitud en N/C, componentes y ángulo $\theta$) y Sonda de potencial $V$ (voltímetro con trazado de isolínea local personalizada).
+    - Partícula de prueba manipulable con controles de Lanzar, Pausar, Paso y Reinicio estricto que restaura el snapshot inicial exacto.
+    - Capas conmutables: Líneas de campo, Isolíneas equipotenciales, Vectores discretos, Sondas de medición, Trayectoria de partícula y Rejilla métrica.
+    - Inspector contextual: permite editar magnitud de carga ($\mu\text{C}$), coordenadas $X, Y$, invertir polaridad o eliminar; inspeccionar sondas y leer la energía cinética y velocidad instantánea de la partícula.
+  - Pruebas unitarias y de integración:
+    - `MarchingSquares.test.ts`: 5 pruebas (interpolación lineal, filtrado de singularidades NaN/infinitos, valores fuera de rango).
+    - `ElectricSimulation.test.ts`: 4 pruebas (toma de snapshot, restauración estricta, reproducibilidad idéntica de trayectorias, límite de 10 cargas).
+    - `ElectricLaboratoryView.test.tsx`: 4 pruebas de interacción en DOM (renderizado, paleta de cargas, presets y ciclo de simulación de partícula).
+- **Verificación:**
+  - `npm test`: 35 pruebas aprobadas en 10 archivos.
+  - `npm run typecheck`: 0 errores.
+  - `npm run lint`: 0 errores, 0 warnings.
+  - `npm run build`: Compilación limpia en 45.4s.
+
+---
+
+## Hito 5 — U2: Simulador y Laboratorio de Capacitores
 - **Estado:** En progreso
 - **Objetivos:**
-  - Corregir el snapshot de condiciones iniciales en U1 para reinicio reproducible de la partícula de prueba ($x_0, y_0, v_{0x}, v_{0y}, q, m$).
-  - Isolíneas equipotenciales exactas en 2D (algoritmo Marching Squares sobre malla de potencial escalar $V(x,y)$ en lugar de bandas de color discretas).
-  - Laboratorio de electrostática con arrastre de cargas positivas y negativas, sondas de campo $E$ y potencial $V$, capas conmutables e inspector contextual.
+  - Fallback 2D sin WebGL en U2 (`CapacitorsModule.tsx`).
+  - Laboratorio interactivo de capacitores (`CapacitorLaboratoryView.tsx`) con handles/sliders para área de placas $A$, distancia de separación $d$, constante dieléctrica $\kappa = \varepsilon_r$ y modo de inserción parcial.
+  - Modo batería: conmutable entre $V$ constante (batería conectada) y $Q$ constante (batería desconectada).
+  - Inspector contextual de capacitor con cálculo exacto de $C, Q, V, E, U$ y balances de energía.
+  - Gráficas interactivas con `ScientificChart` para $C(d)$ y $U(V)$ o $U(Q)$.
 
 
 

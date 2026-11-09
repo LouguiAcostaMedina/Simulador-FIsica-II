@@ -18,7 +18,17 @@ export function useElectricSimulation() {
     setState(simulation.state)
     setErrorMsg(simulation.errorMsg)
     setTime(simulation.time)
-    setTrajectory([...simulation.trajectory]) // force re-render with new ref if needed, or handle in 3D efficiently
+    setTrajectory([...simulation.trajectory])
+    if (simulation.testParticle) {
+      setTestParticle({
+        position: simulation.testParticle.position.clone(),
+        velocity: simulation.testParticle.velocity.clone(),
+        q: simulation.testParticle.q,
+        m: simulation.testParticle.m
+      })
+    } else {
+      setTestParticle(null)
+    }
   }, [simulation])
 
   useEffect(() => {
@@ -94,6 +104,28 @@ export function useElectricSimulation() {
     updateReactState()
   }
 
+  const step = () => {
+    if (simulation.state === 'ready' || simulation.state === 'paused') {
+      simulation.state = 'running'
+      simulation.step()
+      simulation.state = 'paused'
+      updateReactState()
+    } else if (simulation.state === 'running') {
+      simulation.step()
+      updateReactState()
+    }
+  }
+
+  const setChargesDirect = (newCharges: Charge[]) => {
+    try {
+      simulation.setCharges(newCharges)
+      setCharges(newCharges)
+      updateReactState()
+    } catch (e: any) {
+      setErrorMsg(e.message)
+    }
+  }
+
   return {
     charges,
     testParticle,
@@ -105,9 +137,11 @@ export function useElectricSimulation() {
     updateCharge,
     removeCharge,
     clearCharges,
+    setChargesDirect,
     setupTestParticle,
     play,
     pause,
+    step,
     reset,
     setErrorMsg
   }

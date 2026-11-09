@@ -6,7 +6,7 @@ import { Electric2DView } from './Electric2DView'
 import { Electric3DView } from './Electric3DView'
 import { FieldMath } from '../domain/FieldMath'
 import { isWebGLAvailable } from '../../../shared/ui/isWebGLAvailable'
-import { LabPlaceholderView } from '../../../shared/ui/LabShell/LabPlaceholderView'
+import { ElectricLaboratoryView } from './ElectricLaboratoryView'
 
 export default function ElectricModule() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -46,6 +46,10 @@ export default function ElectricModule() {
     sim.addCharge({ id: id2, q: -1e-6, position: new Vector3(1, 0, 0) })
   }
 
+  if (labMode === 'laboratory') {
+    return <ElectricLaboratoryView onSwitchToSimulator={() => handleModeChange('simulator')} />
+  }
+
   return (
     <div className="electric-layout">
       <aside className="electric-sidebar">
@@ -57,7 +61,7 @@ export default function ElectricModule() {
         <div className="sim-controls" style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem' }}>
           <button
             type="button"
-            className={labMode === 'simulator' ? '' : 'secondary'}
+            className=""
             onClick={() => handleModeChange('simulator')}
             style={{ flex: 1 }}
           >
@@ -65,7 +69,7 @@ export default function ElectricModule() {
           </button>
           <button
             type="button"
-            className={labMode === 'laboratory' ? '' : 'secondary'}
+            className="secondary"
             onClick={() => handleModeChange('laboratory')}
             style={{ flex: 1 }}
           >
@@ -143,29 +147,7 @@ export default function ElectricModule() {
       </aside>
 
       <main className="electric-canvas-area">
-        {labMode === 'laboratory' ? (
-          <LabPlaceholderView
-            unitId="U1"
-            unitName="Campo y Potencial Eléctrico"
-            targetMilestone="Hito 4 — Laboratorio Electrostático"
-            onSwitchToSimulator={() => handleModeChange('simulator')}
-            expectedFeatures={[
-              'Mesa de cargas 2D/3D con arrastre libre de cargas puntuales positivas y negativas',
-              'Sondas interactivas de vector campo eléctrico E (N/C) y potencial escalar V (V)',
-              'Isolíneas equipotenciales continuas generadas mediante algoritmo Marching Squares',
-              'Lanzamiento de carga de prueba con control de posición inicial, masa m, carga q y v₀',
-              'Snapshot reproducible de condiciones iniciales para reinicio estricto'
-            ]}
-            physicalLaws={[
-              'Ley de Coulomb: F = k·(q₁·q₂)/r²',
-              'Principio de Superposición lineal',
-              'Potencial V(r) = k·Σ(qᵢ/rᵢ)',
-              'Marching Squares para equipotenciales exactas'
-            ]}
-          />
-        ) : (
-          <>
-            <div className="canvas-toolbar">
+        <div className="canvas-toolbar">
               <button onClick={() => setViewMode('2D')} className={viewMode === '2D' ? 'active' : ''}>Vista 2D</button>
               <button 
                   onClick={() => {
@@ -203,8 +185,6 @@ export default function ElectricModule() {
                   />
                 )}
             </div>
-          </>
-        )}
       </main>
     </div>
   )

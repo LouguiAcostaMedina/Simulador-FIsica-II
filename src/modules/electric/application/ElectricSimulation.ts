@@ -7,6 +7,13 @@ export type SimulationState = 'unconfigured' | 'ready' | 'running' | 'paused' | 
 export class ElectricSimulation {
   charges: Charge[] = []
   testParticle: TestParticle | null = null
+  initialParticleSnapshot: {
+    position: Vector3
+    velocity: Vector3
+    q: number
+    m: number
+  } | null = null
+
   state: SimulationState = 'unconfigured'
   time: number = 0
   dt: number = 0.001 // 1 ms de paso físico
@@ -29,16 +36,40 @@ export class ElectricSimulation {
   }
 
   setTestParticle(particle: TestParticle | null) {
-    this.testParticle = particle
+    if (particle) {
+      this.initialParticleSnapshot = {
+        position: particle.position.clone(),
+        velocity: particle.velocity.clone(),
+        q: particle.q,
+        m: particle.m
+      }
+      this.testParticle = {
+        position: particle.position.clone(),
+        velocity: particle.velocity.clone(),
+        q: particle.q,
+        m: particle.m
+      }
+    } else {
+      this.initialParticleSnapshot = null
+      this.testParticle = null
+    }
     this.resetSimulation()
   }
 
   resetSimulation() {
     this.time = 0
     this.trajectory = []
-    if (this.testParticle) {
+    if (this.initialParticleSnapshot) {
+      this.testParticle = {
+        position: this.initialParticleSnapshot.position.clone(),
+        velocity: this.initialParticleSnapshot.velocity.clone(),
+        q: this.initialParticleSnapshot.q,
+        m: this.initialParticleSnapshot.m
+      }
       this.trajectory.push(this.testParticle.position.clone())
       this.state = 'ready'
+    } else {
+      this.state = this.charges.length > 0 ? 'ready' : 'unconfigured'
     }
     this.errorMsg = null
   }
